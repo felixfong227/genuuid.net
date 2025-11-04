@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import UuidApp from '../components/UuidApp';
+import '../styles/global.css';
+
+const title = 'Instant UUIDv4 Generator | genuuid.net';
+const description = 'Generate RFC 4122 version 4 UUIDs instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
+---
+
+<BaseLayout title={title} description={description}>
+  <main
+    id="main"
+    class="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-14 px-6 pb-16 pt-20 sm:px-10 md:gap-16 md:pt-24"
+  >
+    <div class="absolute inset-x-0 top-10 -z-10 hidden h-64 rounded-full bg-emerald-500/20 blur-3xl md:block" aria-hidden="true" />
+
+    <header class="flex flex-col gap-6 text-center md:text-left">
+      <span class="self-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 md:self-start">
+        Zero Roundtrip
+      </span>
+      <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl">
+        Instant UUIDv4 Generator
+      </h1>
+      <p class="mx-auto max-w-2xl text-base text-white/70 md:mx-0 md:text-lg md:leading-8">
+        Lightning-fast, privacy-first UUIDs generated on the client with the open-source uuid library. Refresh whenever you like, or create up to 500 at once for data seeding, testing, and more.
+      </p>
+    </header>
+
+    <nav aria-label="UUID versions" class="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-white/30 transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+        aria-current="page"
+      >
+        Version 4
+      </button>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/35"
+        disabled
+      >
+        Version 1
+      </button>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/35"
+        disabled
+      >
+        Version 7
+      </button>
+    </nav>
+
+    <UuidApp client:idle />
+
+    <footer class="mt-auto border-t border-white/10 pt-8 text-sm text-white/55">
+      <p>
+        Built with Astro and the <a class="underline-offset-4 hover:underline" href="https://www.npmjs.com/package/uuid" target="_blank" rel="noreferrer">uuid</a> package.
+        Everything runs locally. Stay fast, stay private.
+      </p>
+    </footer>
+  </main>
+</BaseLayout>

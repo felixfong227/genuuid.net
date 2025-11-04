@@ -1,0 +1,26 @@
+---
+const {
+  title = 'genuuid.net — Instant UUID Generator',
+  description = 'Generate RFC 4122 UUIDs instantly in your browser with zero server roundtrips.',
+} = Astro.props;
+
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en" class="min-h-full bg-slate-950">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#020617" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-slate-950 font-sans text-slate-100 antialiased">
+    <div class="min-h-screen">
+      <slot />
+    </div>
+  </body>
+</html>
+

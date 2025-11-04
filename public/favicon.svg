@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="genuuid">
+  <defs>
+    <linearGradient id="bg" x1="12" x2="52" y1="8" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#34d399" />
+      <stop offset="1" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)" />
+  <path
+    fill="none"
+    stroke="#0f172a"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="4.5"
+    d="M21 18v18c0 7 3.6 12 11 12s11-5 11-12V18"
+  />
+  <path
+    fill="none"
+    stroke="#0f172a"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="4.5"
+    d="M21 30h22"
+  />
+  <style>
+    @media (prefers-color-scheme: dark) {
+      rect { filter: brightness(0.85); }
+      path { stroke: #0b1120; }
+    }
+  </style>
+</svg>
