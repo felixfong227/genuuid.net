@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import UuidApp from '../components/UuidApp';
+import UuidGenerator from '../components/UuidGenerator';
+import BulkUuid from '../components/BulkUuid';
 import '../styles/global.css';
 
 const title = 'Instant UUIDv4 Generator | genuuid.net';
@@ -44,7 +45,8 @@ const description = 'Generate RFC 4122 version 4 UUIDs instantly in your browser
       </button>
     </nav>
 
-    <UuidApp client:idle />
+    <UuidGenerator client:load />
+    <BulkUuid client:idle />
     
   </main>
 </BaseLayout>
