@@ -109,7 +109,6 @@ export default function UuidApp() {
   const handleRegenerate = () => {
     const uuid = generateUuidV4();
     setSingleUuid(uuid);
-    scheduleSingleStatus('New UUID generated.');
   };
 
   const handleCopySingle = async () => {
@@ -120,7 +119,6 @@ export default function UuidApp() {
 
     const success = await copyToClipboard(singleUuid);
     if (success) {
-      scheduleSingleStatus('Copied UUID to clipboard.');
       flashSingleCopyLabel();
     } else {
       scheduleSingleStatus('Copy failed. Select and copy manually.');
@@ -197,7 +195,7 @@ export default function UuidApp() {
     <>
       <section
         aria-labelledby="single-heading"
-        className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_30px_80px_-20px_rgba(16,185,129,0.35)] backdrop-blur-sm"
+        className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_1.875rem_5rem_-1.25rem_rgba(16,185,129,0.35)] backdrop-blur-sm"
       >
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -227,7 +225,7 @@ export default function UuidApp() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 w-24"
               onClick={handleCopySingle}
             >
               {singleCopyLabel}
@@ -254,7 +252,7 @@ export default function UuidApp() {
 
       <section
         aria-labelledby="bulk-heading"
-        className="rounded-3xl border border-white/10 bg-white/4 p-8 shadow-[0_30px_80px_-24px_rgba(96,165,250,0.28)] backdrop-blur-sm"
+        className="rounded-3xl border border-white/10 bg-white/4 p-8 shadow-[0_1.875rem_5rem_-1.5rem_rgba(96,165,250,0.28)] backdrop-blur-sm"
       >
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
