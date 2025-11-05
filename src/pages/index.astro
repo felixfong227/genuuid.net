@@ -2,13 +2,12 @@
 export const prerender = true;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import UuidGenerator from '../components/UuidGenerator';
-import BulkUuid from '../components/BulkUuid';
+import UuidApp from '../components/UuidApp';
 import '../styles/global.css';
 
-const title = 'Instant UUIDv4 Generator | genuuid.net';
+const title = 'Instant UUID Generator | genuuid.net';
 const description =
-    'Generate RFC 4122 version 4 UUIDs instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
+    'Generate RFC 4122 compliant UUIDs (v1, v4) instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
 ---
 
 <BaseLayout title={title} description={description}>
@@ -26,35 +25,10 @@ const description =
       <h1
         class="text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl"
       >
-        Instant UUIDv4 Generator
+        Instant UUID Generator
       </h1>
     </header>
 
-    <nav aria-label="UUID versions" class="flex flex-wrap items-center gap-3">
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-white/30 transition hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-        aria-current="page"
-      >
-        Version 4
-      </button>
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/35"
-        disabled
-      >
-        Version 1
-      </button>
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/35"
-        disabled
-      >
-        Version 7
-      </button>
-    </nav>
-
-    <UuidGenerator client:load />
-    <BulkUuid client:idle />
+    <UuidApp client:load />
   </main>
 </BaseLayout>

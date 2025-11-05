@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { generateMany } from '../lib/uuid';
 import CopyButton from './CopyButton';
+import { useUuidVersion } from './UuidVersionContext';
 import { classNames } from './utils';
 
 const BULK_STATUS_TIMEOUT = 3000;
@@ -30,7 +31,8 @@ function BulkUuidSection({
     onCopySuccess,
     onCopyError,
     isReadOnly = false,
-}: BulkUuidSectionProps) {
+    version,
+}: BulkUuidSectionProps & { version: string }) {
     return (
         <section
             aria-labelledby="bulk-heading"
@@ -42,7 +44,7 @@ function BulkUuidSection({
                         id="bulk-heading"
                         className="text-2xl font-semibold text-white md:text-3xl"
                     >
-                        Bulk UUIDv4
+                        Bulk UUID{version}
                     </h2>
                     <p className="max-w-xl text-sm text-white/70">
                         Need lots of IDs? Generate up to 500 at once instantly.
@@ -138,6 +140,7 @@ function BulkUuidSection({
 }
 
 export default function BulkUuid() {
+    const { version } = useUuidVersion();
     const [bulkCountInput, setBulkCountInput] = useState('10');
     const [bulkUuids, setBulkUuids] = useState<string[]>([]);
     const [bulkStatus, setBulkStatus] = useState('');
@@ -181,7 +184,7 @@ export default function BulkUuid() {
         }
 
         try {
-            const uuids = generateMany(count);
+            const uuids = generateMany(count, version);
             setBulkUuids(uuids);
             setBulkHasError(false);
             scheduleBulkStatus(
@@ -214,6 +217,7 @@ export default function BulkUuid() {
             copyText={bulkUuids.join('\n')}
             onCopySuccess={handleBulkCopySuccess}
             onCopyError={(message) => scheduleBulkStatus(message)}
+            version={version}
         />
     );
 }
