@@ -1,9 +1,9 @@
+import { clsx } from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
 import { generateMany } from '../lib/uuid';
 import CopyButton from './CopyButton';
 import { useUuidVersion } from './UuidVersionContext';
-import { classNames } from './utils';
 
 const BULK_STATUS_TIMEOUT = 3000;
 
@@ -70,7 +70,7 @@ function BulkUuidSection({
                             onChange={(event) =>
                                 onCountChange(event.target.value)
                             }
-                            className={classNames(
+                            className={clsx(
                                 'w-24 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-base font-semibold text-white shadow-inner shadow-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
                                 bulkHasError
                                     ? 'focus-visible:ring-red-400 ring-2 ring-red-400'
