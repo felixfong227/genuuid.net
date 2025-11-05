@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-import { generateUuidV4 } from '../lib/uuid';
+import { generateUuid } from '../lib/uuid';
 import CopyButton from './CopyButton';
+import { useUuidVersion } from './UuidVersionContext';
 
 const PLACEHOLDER_UUID = '------------------------------------';
 const SINGLE_STATUS_TIMEOUT = 2500;
 
 export default function SingleUuid() {
+    const { version } = useUuidVersion();
     const [singleUuid, setSingleUuid] = useState<string>(PLACEHOLDER_UUID);
     const [singleStatus, setSingleStatus] = useState('');
     const singleStatusTimer = useRef<number | null>(null);
 
     const handleRegenerate = useCallback(() => {
-        const uuid = generateUuidV4();
+        const uuid = generateUuid(version);
         setSingleUuid(uuid);
-    }, []);
+    }, [version]);
 
     useEffect(() => {
         handleRegenerate();
@@ -85,7 +87,7 @@ export default function SingleUuid() {
                         id="single-heading"
                         className="text-2xl font-semibold text-white md:text-3xl"
                     >
-                        Single UUIDv4
+                        Single UUID{version}
                     </h2>
                     <p className="max-w-xl text-sm text-white/70">
                         RFC 4122 compliant identifiers generated entirely in
