@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { generateUuidV4 } from '../lib/uuid';
-import { copyToClipboard } from './utils';
+import CopyButton from './CopyButton';
 
 const PLACEHOLDER_UUID = '------------------------------------';
 const SINGLE_STATUS_TIMEOUT = 2500;
@@ -12,15 +12,11 @@ export default function SingleUuid() {
   const [singleStatus, setSingleStatus] = useState('');
   const singleStatusTimer = useRef<number | null>(null);
 
-  const [singleCopyLabel, setSingleCopyLabel] = useState('Copy');
-  const singleCopyTimer = useRef<number | null>(null);
-
   useEffect(() => {
     handleRegenerate();
 
     return () => {
       if (singleStatusTimer.current) window.clearTimeout(singleStatusTimer.current);
-      if (singleCopyTimer.current) window.clearTimeout(singleCopyTimer.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -33,29 +29,9 @@ export default function SingleUuid() {
     singleStatusTimer.current = window.setTimeout(() => setSingleStatus(''), timeout);
   };
 
-  const flashSingleCopyLabel = (label = 'Copied!') => {
-    setSingleCopyLabel(label);
-    if (singleCopyTimer.current) window.clearTimeout(singleCopyTimer.current);
-    singleCopyTimer.current = window.setTimeout(() => setSingleCopyLabel('Copy'), 1800);
-  };
-
   const handleRegenerate = () => {
     const uuid = generateUuidV4();
     setSingleUuid(uuid);
-  };
-
-  const handleCopySingle = async () => {
-    if (!hasGeneratedSingle) {
-      scheduleSingleStatus('Generate a UUID first.');
-      return;
-    }
-
-    const success = await copyToClipboard(singleUuid);
-    if (success) {
-      flashSingleCopyLabel();
-    } else {
-      scheduleSingleStatus('Copy failed. Select and copy manually.');
-    }
   };
 
   useHotkeys(
@@ -70,16 +46,22 @@ export default function SingleUuid() {
     [handleRegenerate]
   );
 
+  const copyButtonRef = useRef<HTMLButtonElement>(null);
+
   useHotkeys(
     'c',
     (event) => {
       event.preventDefault();
-      handleCopySingle();
+      if (hasGeneratedSingle && copyButtonRef.current) {
+        copyButtonRef.current.click();
+      } else {
+        scheduleSingleStatus('Generate a UUID first.');
+      }
     },
     {
       enableOnFormTags: false,
     },
-    [handleCopySingle, hasGeneratedSingle]
+    [hasGeneratedSingle]
   );
 
   return (
@@ -113,13 +95,15 @@ export default function SingleUuid() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 w-24"
-            onClick={handleCopySingle}
-          >
-            {singleCopyLabel}
-          </button>
+          <CopyButton
+            ref={copyButtonRef}
+            text={singleUuid}
+            defaultLabel="Copy"
+            disabled={!hasGeneratedSingle}
+            className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 w-24 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-white/30"
+            onCopyError={(message) => scheduleSingleStatus(message)}
+            aria-label="Copy UUID"
+          />
         </div>
       </div>
 

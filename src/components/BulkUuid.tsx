@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { generateMany } from '../lib/uuid';
-import { copyToClipboard, classNames } from './utils';
+import { classNames } from './utils';
+import CopyButton from './CopyButton';
 
 const BULK_STATUS_TIMEOUT = 3000;
 
@@ -9,11 +10,12 @@ interface BulkUuidSectionProps {
   bulkCountInput: string;
   bulkUuids: string[];
   bulkStatus: string;
-  bulkCopyLabel: string;
   bulkHasError: boolean;
   onCountChange: (value: string) => void;
   onGenerate: () => void;
-  onCopy: () => void;
+  copyText: string;
+  onCopySuccess: () => void;
+  onCopyError: (message: string) => void;
   isReadOnly?: boolean;
 }
 
@@ -21,11 +23,12 @@ function BulkUuidSection({
   bulkCountInput,
   bulkUuids,
   bulkStatus,
-  bulkCopyLabel,
   bulkHasError,
   onCountChange,
   onGenerate,
-  onCopy,
+  copyText,
+  onCopySuccess,
+  onCopyError,
   isReadOnly = false,
 }: BulkUuidSectionProps) {
   return (
@@ -73,14 +76,15 @@ function BulkUuidSection({
             >
               Generate
             </button>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-transparent disabled:text-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 min-w-[100px]"
+            <CopyButton
+              text={copyText}
+              defaultLabel="Copy All"
               disabled={!bulkUuids.length}
-              onClick={onCopy}
-            >
-              {bulkCopyLabel}
-            </button>
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-transparent disabled:text-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 min-w-[100px]"
+              onCopySuccess={onCopySuccess}
+              onCopyError={onCopyError}
+              aria-label="Copy all UUIDs"
+            />
           </div>
         </form>
       </div>
@@ -123,15 +127,11 @@ export default function BulkUuid() {
   const [bulkStatus, setBulkStatus] = useState('');
   const bulkStatusTimer = useRef<number | null>(null);
 
-  const [bulkCopyLabel, setBulkCopyLabel] = useState('Copy All');
-  const bulkCopyTimer = useRef<number | null>(null);
-
   const [bulkHasError, setBulkHasError] = useState(false);
 
   useEffect(() => {
     return () => {
       if (bulkStatusTimer.current) window.clearTimeout(bulkStatusTimer.current);
-      if (bulkCopyTimer.current) window.clearTimeout(bulkCopyTimer.current);
     };
   }, []);
 
@@ -139,12 +139,6 @@ export default function BulkUuid() {
     setBulkStatus(message);
     if (bulkStatusTimer.current) window.clearTimeout(bulkStatusTimer.current);
     bulkStatusTimer.current = window.setTimeout(() => setBulkStatus(''), timeout);
-  };
-
-  const flashBulkCopyLabel = (label = 'Copied!') => {
-    setBulkCopyLabel(label);
-    if (bulkCopyTimer.current) window.clearTimeout(bulkCopyTimer.current);
-    bulkCopyTimer.current = window.setTimeout(() => setBulkCopyLabel('Copy All'), 1800);
   };
 
   const parseBulkCount = (): number | null => {
@@ -174,19 +168,8 @@ export default function BulkUuid() {
     }
   };
 
-  const handleBulkCopy = async () => {
-    if (!bulkUuids.length) {
-      scheduleBulkStatus('Generate UUIDs before copying.');
-      return;
-    }
-
-    const success = await copyToClipboard(bulkUuids.join('\n'));
-    if (success) {
-      scheduleBulkStatus('Copied UUID list.');
-      flashBulkCopyLabel();
-    } else {
-      scheduleBulkStatus('Copy failed. Select and copy manually.');
-    }
+  const handleBulkCopySuccess = () => {
+    scheduleBulkStatus('Copied UUID list.');
   };
 
   const handleCountChange = (value: string) => {
@@ -199,11 +182,12 @@ export default function BulkUuid() {
       bulkCountInput={bulkCountInput}
       bulkUuids={bulkUuids}
       bulkStatus={bulkStatus}
-      bulkCopyLabel={bulkCopyLabel}
       bulkHasError={bulkHasError}
       onCountChange={handleCountChange}
       onGenerate={handleBulkGenerate}
-      onCopy={handleBulkCopy}
+      copyText={bulkUuids.join('\n')}
+      onCopySuccess={handleBulkCopySuccess}
+      onCopyError={(message) => scheduleBulkStatus(message)}
     />
   );
 }
