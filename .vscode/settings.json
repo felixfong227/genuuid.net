@@ -1,0 +1,13 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "never",
+        "source.sortImports": "explicit",
+        "source.fixAll.ruff": "explicit",
+        "source.organizeImports.ruff": "explicit"
+    },
+    "notebook.formatOnSave.enabled": true,
+    "biome.requireConfiguration": true,
+    "editor.defaultFormatter": "biomejs.biome"
+}
