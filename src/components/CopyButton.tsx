@@ -1,5 +1,5 @@
-import { forwardRef } from 'react';
 import { useSignal, useSignalEffect } from '@preact/signals-react';
+import { forwardRef } from 'react';
 
 import { copyToClipboard } from './utils';
 
