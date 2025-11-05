@@ -103,15 +103,22 @@ function BulkUuidSection({
                     <span>UUIDs</span>
                     <span>{bulkUuids.length}</span>
                 </div>
-                <ol
-                    className="mt-4 max-h-64 space-y-2 overflow-y-auto pr-1 pl-6 text-sm font-mono text-white/80 list-decimal"
+                <div
+                    className="mt-4 max-h-64 space-y-2 overflow-y-auto pr-1"
                     aria-live="polite"
-                    aria-label="Generated UUIDs"
                 >
-                    {bulkUuids.map((uuid) => (
-                        <li key={uuid}>{uuid}</li>
+                    {bulkUuids.map((uuid, index) => (
+                        <div
+                            key={uuid}
+                            className="flex gap-3 text-sm font-mono text-white/80"
+                        >
+                            <span className="text-white/50 tabular-nums select-none shrink-0">
+                                {index + 1}.
+                            </span>
+                            <span className="break-all min-w-0">{uuid}</span>
+                        </div>
                     ))}
-                </ol>
+                </div>
                 {bulkUuids.length === 0 && (
                     <p className="mt-3 text-xs text-white/50">
                         No UUIDs yet. Choose a count (1–500) and press Generate.
