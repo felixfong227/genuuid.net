@@ -1,0 +1,12 @@
+{
+    "name": "genuuid.net",
+    "remoteUser": "vscode",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "postCreateCommand": "bun install",
+    "features": {
+        "ghcr.io/rails/devcontainer/features/bun:1.0.2": {}
+    },
+    "remoteEnv": {
+        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+    }
+}
