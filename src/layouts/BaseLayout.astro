@@ -7,11 +7,13 @@ const {
 } = Astro.props;
 
 import '../styles/global.css';
+import PostHog from '../components/posthog.astro';
 ---
 
 <!doctype html>
 <html lang="en" class="min-h-full bg-slate-950">
   <head>
+    <PostHog />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
@@ -25,4 +27,3 @@ import '../styles/global.css';
     </div>
   </body>
 </html>
-
