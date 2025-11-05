@@ -1,7 +1,6 @@
 import { useSignal, useSignalEffect } from '@preact/signals-react';
+import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { forwardRef } from 'react';
-
-import { copyToClipboard } from './utils';
 
 interface CopyButtonProps {
     text: string;
@@ -42,19 +41,16 @@ const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
             }
         });
 
+        const [_, copyToClipboard] = useCopyToClipboard();
+
         const handleCopy = async () => {
             if (!text || disabled) {
                 onCopyError?.('Nothing to copy.');
                 return;
             }
-
-            const success = await copyToClipboard(text);
-            if (success) {
-                label.value = copiedLabel;
-                onCopySuccess?.();
-            } else {
-                onCopyError?.('Copy failed. Select and copy manually.');
-            }
+            await copyToClipboard(text);
+            label.value = copiedLabel;
+            onCopySuccess?.();
         };
 
         return (
