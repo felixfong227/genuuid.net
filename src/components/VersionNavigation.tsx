@@ -34,8 +34,13 @@ export default function VersionNavigation() {
             </button>
             <button
                 type="button"
-                disabled
-                className="inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/35 cursor-pointer"
+                onClick={() => setVersion('v7')}
+                className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+                    version === 'v7'
+                        ? 'bg-white text-slate-950 shadow-lg shadow-white/30 hover:bg-white/90 focus-visible:ring-white/80'
+                        : 'border border-white/15 text-white/35 hover:border-white/25 hover:text-white/50'
+                }`}
+                aria-current={version === 'v7' ? 'page' : undefined}
             >
                 Version 7
             </button>

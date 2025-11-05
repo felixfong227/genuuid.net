@@ -15,8 +15,7 @@ export default function SingleUuid() {
     const singleStatusTimer = useRef<number | null>(null);
 
     const handleRegenerate = useCallback(() => {
-        const uuid = generateUuid(version);
-        setSingleUuid(uuid);
+        setSingleUuid(generateUuid(version));
     }, [version]);
 
     useEffect(() => {
