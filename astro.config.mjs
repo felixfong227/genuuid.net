@@ -9,12 +9,18 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare({
-    imageService: 'compile',
-  }),
-  vite: {
-    plugins: [tailwindcss()]
-  },
-  integrations: [react()],
-  output: 'server',
+    adapter: cloudflare({
+        imageService: 'compile',
+    }),
+    vite: {
+        plugins: [tailwindcss()],
+    },
+    integrations: [
+        react({
+            babel: {
+                plugins: [['babel-plugin-react-compiler']],
+            },
+        }),
+    ],
+    output: 'server',
 });
