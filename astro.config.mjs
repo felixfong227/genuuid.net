@@ -16,7 +16,12 @@ export default defineConfig({
         plugins: [tailwindcss()],
         server: {
             proxy: {
-                '/gtf': 'https://eu.i.posthog.com',
+                '/gtf': {
+                    target: 'https://eu.i.posthog.com',
+                    changeOrigin: true,
+                    secure: false,
+                    rewrite: (path) => path.replace(/^\/gtf/, ''),
+                },
             },
         },
     },
