@@ -14,6 +14,11 @@ export default defineConfig({
     }),
     vite: {
         plugins: [tailwindcss()],
+        server: {
+            proxy: {
+                '/gtf': 'https://eu.i.posthog.com',
+            },
+        },
     },
     integrations: [
         react({
