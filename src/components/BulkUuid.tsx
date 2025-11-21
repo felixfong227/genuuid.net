@@ -114,7 +114,7 @@ function BulkUuidSection({
                             key={uuid}
                             className="flex gap-3 text-sm font-mono text-white/80"
                         >
-                            <span className="text-white/50 tabular-nums select-none shrink-0">
+                            <span className="text-white/50 tabular-nums select-none shrink-0 w-10 text-right">
                                 {index + 1}.
                             </span>
                             <span className="break-all min-w-0">{uuid}</span>
