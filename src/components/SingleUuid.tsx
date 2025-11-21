@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    type ChangeEvent,
+    type ClipboardEvent,
+} from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 import { generateUuid } from '../lib/uuid';
@@ -7,6 +15,14 @@ import { useUuidVersion } from './UuidVersionContext';
 
 const PLACEHOLDER_UUID = '------------------------------------';
 const SINGLE_STATUS_TIMEOUT = 2500;
+
+const INPUT_CONFIG = [
+    { maxLength: 8, flex: 2 },
+    { maxLength: 4, flex: 1 },
+    { maxLength: 4, flex: 1 },
+    { maxLength: 4, flex: 1 },
+    { maxLength: 12, flex: 3 },
+];
 
 export default function SingleUuid() {
     const { version } = useUuidVersion();
@@ -75,6 +91,57 @@ export default function SingleUuid() {
         [hasGeneratedSingle],
     );
 
+    const handlePartChange = (index: number, value: string) => {
+        // Allow only hex chars
+        if (!/^[0-9a-fA-F]*$/.test(value)) return;
+
+        const currentParts =
+            singleUuid === PLACEHOLDER_UUID
+                ? ['', '', '', '', '']
+                : singleUuid.split('-');
+
+        // Ensure we have 5 parts
+        while (currentParts.length < 5) currentParts.push('');
+
+        currentParts[index] = value;
+        setSingleUuid(currentParts.join('-'));
+    };
+
+    const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
+        const text = event.clipboardData.getData('text').trim();
+
+        // Regex for 32 hex chars (dashless UUID)
+        const dashlessMatch = text.match(
+            /^([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})$/,
+        );
+
+        if (dashlessMatch) {
+            event.preventDefault();
+            const parts = dashlessMatch.slice(1);
+            setSingleUuid(parts.join('-'));
+            scheduleSingleStatus('Pasted UUID formatted automatically.');
+            return;
+        }
+
+        // Regex for standard UUID
+        if (
+            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+                text,
+            )
+        ) {
+            event.preventDefault();
+            setSingleUuid(text);
+            scheduleSingleStatus('Pasted UUID applied.');
+            return;
+        }
+    };
+
+    const parts =
+        singleUuid === PLACEHOLDER_UUID
+            ? ['', '', '', '', '']
+            : singleUuid.split('-');
+    const safeParts = parts.length === 5 ? parts : ['', '', '', '', ''];
+
     return (
         <section
             aria-labelledby="single-heading"
@@ -104,13 +171,38 @@ export default function SingleUuid() {
             </div>
 
             <div className="mt-7 flex flex-col gap-4 lg:flex-row lg:items-center">
-                <div className="relative flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black/60 px-5 py-4">
+                <div className="relative flex-1 overflow-x-auto rounded-2xl border border-white/10 bg-black/60 px-5 py-4">
                     <span className="text-xs uppercase tracking-[0.35em] text-white/35">
                         Current UUID
                     </span>
-                    <p className="mt-3 break-all font-mono text-lg text-emerald-200 md:text-xl">
-                        {singleUuid}
-                    </p>
+                    <div className="mt-3 flex items-baseline font-mono text-lg text-emerald-200 md:text-xl">
+                        {safeParts.map((part, index) => (
+                            <div key={index} className="flex items-baseline">
+                                <input
+                                    type="text"
+                                    value={part}
+                                    maxLength={INPUT_CONFIG[index].maxLength}
+                                    onChange={(e) =>
+                                        handlePartChange(index, e.target.value)
+                                    }
+                                    onPaste={handlePaste}
+                                    style={{
+                                        width: `${INPUT_CONFIG[index].maxLength}ch`,
+                                    }}
+                                    className="bg-transparent p-0 text-center font-mono outline-none border-b-2 border-transparent focus:border-emerald-400 placeholder-white/20 align-baseline"
+                                    placeholder={'-'.repeat(
+                                        INPUT_CONFIG[index].maxLength,
+                                    )}
+                                    aria-label={`UUID part ${index + 1}`}
+                                />
+                                {index < 4 && (
+                                    <span className="select-none text-white/30">
+                                        -
+                                    </span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="flex items-center gap-3">
                     <CopyButton
