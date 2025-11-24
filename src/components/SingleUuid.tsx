@@ -118,8 +118,14 @@ export default function SingleUuid() {
         if (dashlessMatch) {
             event.preventDefault();
             const parts = dashlessMatch.slice(1);
-            setSingleUuid(parts.join('-'));
-            scheduleSingleStatus('Pasted UUID formatted automatically.');
+            const formattedUuid = parts.join('-');
+            setSingleUuid(formattedUuid);
+            window.requestAnimationFrame(() => {
+                copyButtonRef.current?.click();
+            });
+            scheduleSingleStatus(
+                'Pasted UUID formatted automatically and copied.',
+            );
             return;
         }
 
