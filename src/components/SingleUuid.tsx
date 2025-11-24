@@ -155,11 +155,6 @@ export default function SingleUuid() {
                     >
                         Single UUID{version}
                     </h2>
-                    <p className="max-w-xl text-sm text-white/70">
-                        RFC 4122 compliant identifiers generated entirely in
-                        this tab. No tracking, no storage, nothing leaves your
-                        browser.
-                    </p>
                 </div>
                 <button
                     type="button"

@@ -7,8 +7,11 @@ import cloudflare from '@astrojs/cloudflare';
 
 import react from '@astrojs/react';
 
+import sitemap from '@astrojs/sitemap';
+
 // https://astro.build/config
 export default defineConfig({
+    site: 'https://genuuid.net',
     adapter: cloudflare({
         imageService: 'compile',
         platformProxy: {
@@ -34,6 +37,7 @@ export default defineConfig({
                 plugins: [['babel-plugin-react-compiler']],
             },
         }),
+        sitemap(),
     ],
     output: 'server',
 });

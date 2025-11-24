@@ -46,11 +46,6 @@ function BulkUuidSection({
                     >
                         Bulk UUID{version}
                     </h2>
-                    <p className="max-w-xl text-sm text-white/70">
-                        Need lots of IDs? Generate up to 500 at once instantly.
-                        Copy them as a newline-delimited list for seeding
-                        databases or test fixtures.
-                    </p>
                 </div>
                 <form
                     className="flex flex-col gap-4 text-sm sm:flex-row sm:items-center"
@@ -187,9 +182,6 @@ export default function BulkUuid() {
             const uuids = generateMany(count, version);
             setBulkUuids(uuids);
             setBulkHasError(false);
-            scheduleBulkStatus(
-                `Generated ${count} UUID${count === 1 ? '' : 's'}.`,
-            );
         } catch (error) {
             console.error(error);
             setBulkHasError(true);
