@@ -8,6 +8,8 @@ const {
 
 import '../styles/global.css';
 import PostHog from '../components/posthog.astro';
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://genuuid.net');
 ---
 
 <!doctype html>
@@ -18,7 +20,22 @@ import PostHog from '../components/posthog.astro';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#020617" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="genuuid.net" />
+
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+
     <title>{title}</title>
   </head>
   <body class="min-h-screen bg-slate-950 font-sans text-slate-100 antialiased">
