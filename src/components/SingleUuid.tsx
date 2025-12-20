@@ -71,16 +71,24 @@ export default function SingleUuid() {
     const inputContainerRef = useHotkeys<HTMLDivElement>(
         'mod+c',
         (event) => {
-            event.preventDefault();
+            const target = event.target;
+            if (target instanceof HTMLInputElement) {
+                const start = target.selectionStart;
+                const end = target.selectionEnd;
+                if (start !== null && end !== null && end > start) return;
+            }
+
             if (canCopy && copyButtonRef.current) {
+                event.preventDefault();
                 copyButtonRef.current.click();
+            } else {
+                scheduleSingleStatus('Generate a UUID first.');
             }
         },
         {
             enableOnFormTags: ['INPUT'],
-            preventDefault: true,
         },
-        [canCopy],
+        [canCopy, scheduleSingleStatus],
     );
 
     const handlePartChange = (index: number, value: string) => {
