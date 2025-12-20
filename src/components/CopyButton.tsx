@@ -56,13 +56,9 @@ const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
         },
         ref,
     ) => {
-        const [label, setLabel] = useState(defaultLabel);
         const [isCopied, setIsCopied] = useState(false);
         const resetTimerRef = useRef<number | null>(null);
-
-        useEffect(() => {
-            setLabel(defaultLabel);
-        }, [defaultLabel]);
+        const lastTextRef = useRef(text);
 
         useEffect(() => {
             return () => {
@@ -71,6 +67,17 @@ const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
                 }
             };
         }, []);
+
+        useEffect(() => {
+            if (lastTextRef.current === text) return;
+            lastTextRef.current = text;
+
+            if (resetTimerRef.current !== null) {
+                window.clearTimeout(resetTimerRef.current);
+                resetTimerRef.current = null;
+            }
+            setIsCopied(false);
+        }, [text]);
 
         const handleCopy = async () => {
             if (disabled) return;
@@ -86,7 +93,6 @@ const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
                 return;
             }
 
-            setLabel(copiedLabel);
             setIsCopied(true);
 
             if (resetTimerRef.current !== null) {
@@ -94,12 +100,13 @@ const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
             }
             resetTimerRef.current = window.setTimeout(() => {
                 resetTimerRef.current = null;
-                setLabel(defaultLabel);
                 setIsCopied(false);
             }, COPIED_RESET_MS);
 
             onCopySuccess?.();
         };
+
+        const label = isCopied ? copiedLabel : defaultLabel;
 
         return (
             <button
@@ -108,7 +115,7 @@ const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
                 className={className}
                 onClick={handleCopy}
                 disabled={disabled}
-                aria-label={ariaLabel ?? defaultLabel}
+                aria-label={ariaLabel ?? label}
             >
                 <svg
                     className="w-3.5 h-3.5 shrink-0"
