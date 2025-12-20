@@ -31,6 +31,7 @@ export const ALL: APIRoute = async ({ request, params, clientAddress }) => {
         for (const key of ['server', 'x-powered-by', 'content-encoding']) {
             proxiedHeaders.delete(key);
         }
+        proxiedHeaders.set('X-Robots-Tag', 'noindex, nofollow');
         const proxiedRes = new Response(res.body, {
             status: res.status,
             statusText: res.statusText,
