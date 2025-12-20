@@ -67,6 +67,22 @@ export default function SingleUuid() {
         [canCopy, scheduleSingleStatus],
     );
 
+    // Focus-trapped hotkey for mod+c (copy UUID) when inputs are focused
+    const inputContainerRef = useHotkeys<HTMLDivElement>(
+        'mod+c',
+        (event) => {
+            event.preventDefault();
+            if (canCopy && copyButtonRef.current) {
+                copyButtonRef.current.click();
+            }
+        },
+        {
+            enableOnFormTags: ['INPUT'],
+            preventDefault: true,
+        },
+        [canCopy],
+    );
+
     const handlePartChange = (index: number, value: string) => {
         if (!/^[0-9a-fA-F]*$/.test(value)) return;
 
@@ -178,7 +194,10 @@ export default function SingleUuid() {
                     </div>
 
                     <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                        <div className="flex items-center gap-0.5 font-mono text-[13px] xs:text-base sm:text-2xl md:text-3xl pb-2 min-w-max">
+                        <div
+                            ref={inputContainerRef}
+                            className="flex items-center gap-0.5 font-mono text-[13px] xs:text-base sm:text-2xl md:text-3xl pb-2 min-w-max"
+                        >
                             {UUID_PARTS.map((partConfig, index) => (
                                 <div
                                     key={partConfig.id}
@@ -198,7 +217,7 @@ export default function SingleUuid() {
                                         style={{
                                             width: `${partConfig.maxLength + 0.5}ch`,
                                         }}
-                                        className="bg-transparent p-0 text-center font-mono text-emerald-200 outline-none border-b-2 border-transparent focus:border-emerald-400 transition-colors placeholder-white/20 align-baseline"
+                                        className="p-0 text-center font-mono outline-none border-b-2 placeholder-white/20 align-baseline bg-transparent text-emerald-200 border-transparent focus:border-emerald-400 transition-colors"
                                         placeholder={'-'.repeat(
                                             partConfig.maxLength,
                                         )}
