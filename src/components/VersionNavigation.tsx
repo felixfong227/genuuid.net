@@ -1,49 +1,65 @@
+import { clsx } from 'clsx';
+
 import { useUuidVersion } from './UuidVersionContext';
 
+const versions = [
+    { id: 'v4', label: 'v4', desc: 'Random', href: '/v4/' },
+    { id: 'v1', label: 'v1', desc: 'Timestamp', href: '/v1/' },
+    { id: 'v7', label: 'v7', desc: 'Unix Time', href: '/v7/' },
+] as const;
+
 export default function VersionNavigation() {
-    const { version, setVersion } = useUuidVersion();
+    const { version, navigateToVersion } = useUuidVersion();
 
     return (
-        <nav
-            aria-label="UUID versions"
-            className="flex flex-wrap items-center gap-3"
-        >
-            <button
-                type="button"
-                onClick={() => setVersion('v4')}
-                className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
-                    version === 'v4'
-                        ? 'bg-white text-slate-950 shadow-lg shadow-white/30 hover:bg-white/90 focus-visible:ring-white/80'
-                        : 'border border-white/15 text-white/35 hover:border-white/25 hover:text-white/50'
-                }`}
-                aria-current={version === 'v4' ? 'page' : undefined}
-            >
-                Version 4
-            </button>
-            <button
-                type="button"
-                onClick={() => setVersion('v1')}
-                className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
-                    version === 'v1'
-                        ? 'bg-white text-slate-950 shadow-lg shadow-white/30 hover:bg-white/90 focus-visible:ring-white/80'
-                        : 'border border-white/15 text-white/35 hover:border-white/25 hover:text-white/50'
-                }`}
-                aria-current={version === 'v1' ? 'page' : undefined}
-            >
-                Version 1
-            </button>
-            <button
-                type="button"
-                onClick={() => setVersion('v7')}
-                className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
-                    version === 'v7'
-                        ? 'bg-white text-slate-950 shadow-lg shadow-white/30 hover:bg-white/90 focus-visible:ring-white/80'
-                        : 'border border-white/15 text-white/35 hover:border-white/25 hover:text-white/50'
-                }`}
-                aria-current={version === 'v7' ? 'page' : undefined}
-            >
-                Version 7
-            </button>
+        <nav aria-label="UUID versions" className="animate-float-up">
+            <div className="inline-flex items-stretch rounded-xl border border-white/10 bg-white/5 p-1">
+                {versions.map((v) => {
+                    const isActive = version === v.id;
+                    return (
+                        <a
+                            key={v.id}
+                            href={v.href}
+                            onClick={(event) => {
+                                if (
+                                    event.defaultPrevented ||
+                                    event.button !== 0 ||
+                                    event.metaKey ||
+                                    event.altKey ||
+                                    event.ctrlKey ||
+                                    event.shiftKey
+                                ) {
+                                    return;
+                                }
+                                event.preventDefault();
+                                navigateToVersion(v.id);
+                            }}
+                            className={clsx(
+                                'relative flex flex-col items-center justify-center px-5 py-2.5 rounded-lg font-mono text-sm transition-all duration-200 cursor-pointer',
+                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+                                isActive
+                                    ? 'bg-white text-slate-950 shadow-lg shadow-white/20'
+                                    : 'text-white/40 hover:text-white/70 hover:bg-white/5',
+                            )}
+                            aria-current={isActive ? 'page' : undefined}
+                        >
+                            <span className="font-semibold tracking-tight">
+                                {v.label}
+                            </span>
+                            <span
+                                className={clsx(
+                                    'text-[10px] uppercase tracking-widest mt-0.5',
+                                    isActive
+                                        ? 'text-slate-600'
+                                        : 'text-white/30',
+                                )}
+                            >
+                                {v.desc}
+                            </span>
+                        </a>
+                    );
+                })}
+            </div>
         </nav>
     );
 }

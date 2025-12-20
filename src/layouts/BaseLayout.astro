@@ -4,12 +4,26 @@ export const prerender = true;
 const {
     title = 'genuuid.net — Instant UUID Generator',
     description = 'Generate RFC 4122 UUIDs instantly in your browser with zero server roundtrips.',
+    ogImage,
+    ogImageAlt = 'genuuid.net — Instant UUID Generator',
+    robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
+    jsonLd,
 } = Astro.props;
 
 import '../styles/global.css';
 import PostHog from '../components/posthog.astro';
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://genuuid.net');
+const canonicalURL = new URL(
+    Astro.url.pathname,
+    Astro.site ?? 'https://genuuid.net',
+);
+
+const ogImageURL = ogImage
+    ? new URL(ogImage, Astro.site ?? 'https://genuuid.net')
+    : new URL('/og.png', Astro.site ?? 'https://genuuid.net');
+
+const jsonLdString =
+    jsonLd === undefined ? null : JSON.stringify(jsonLd, null, 0);
 ---
 
 <!doctype html>
@@ -19,10 +33,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://genuuid.
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="googlebot" content={robots} />
     <meta name="theme-color" content="#020617" />
     
     <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+    <link rel="icon" type="image/png" href="/icon-192.png" sizes="any" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
@@ -30,11 +46,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://genuuid.
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="genuuid.net" />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
-    <meta property="twitter:card" content="summary" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    {jsonLdString && (
+      <script type="application/ld+json" set:html={jsonLdString} />
+    )}
 
     <title>{title}</title>
   </head>

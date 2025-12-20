@@ -1,33 +1,81 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
 import UuidApp from '../components/UuidApp';
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
 export const prerender = true;
 
-const title = 'Instant UUID Generator | genuuid.netconst';
+const title = 'Instant UUID Generator | genuuid.net';
 const description =
     'Generate RFC 4122 compliant UUIDs (v1, v4, v7) instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
+
+const site = Astro.site?.toString() ?? 'https://genuuid.net';
+const pageUrl = new URL('/', site).toString();
+
+const faqItems = [
+    {
+        question: 'Does this UUID generator run locally in my browser?',
+        answer: 'Yes. UUIDs are generated in your browser (no server roundtrips required to create the IDs).',
+    },
+    {
+        question: 'Which UUID version should I use (v1, v4, v7)?',
+        answer: 'Use v4 for random identifiers in most apps. Use v7 when you want sortable IDs (time-ordered) while keeping good randomness. Use v1 when you specifically need the legacy timestamp-based format (it can leak time and node information).',
+    },
+    {
+        question: 'How many UUIDs can I generate at once?',
+        answer: 'You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time and copy them in one click.',
+    },
+] as const;
+
+const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+        {
+            '@type': 'WebSite',
+            '@id': `${site}#website`,
+            url: site,
+            name: 'genuuid.net',
+            description,
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'WebPage',
+            '@id': `${pageUrl}#webpage`,
+            url: pageUrl,
+            name: title,
+            description,
+            isPartOf: { '@id': `${site}#website` },
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'WebApplication',
+            '@id': `${pageUrl}#app`,
+            name: 'genuuid.net UUID Generator',
+            url: pageUrl,
+            description,
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'Any',
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        },
+        {
+            '@type': 'FAQPage',
+            '@id': `${pageUrl}#faq`,
+            mainEntity: faqItems.map((item) => ({
+                '@type': 'Question',
+                name: item.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.answer,
+                },
+            })),
+        },
+    ],
+};
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
   <main
     id="main"
-    class="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-14 px-6 pb-16 pt-20 sm:px-10 md:gap-16 md:pt-24"
+    class="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6 md:gap-10 md:py-16 lg:py-20"
   >
-    <div
-      class="absolute inset-x-0 top-10 -z-10 hidden h-64 rounded-full bg-emerald-500/20 blur-3xl md:block"
-      aria-hidden="true"
-    >
-    </div>
-
-    <header class="flex flex-col gap-6 text-center md:text-left">
-      <h1
-        class="text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl"
-      >
-        Instant UUID Generator
-      </h1>
-    </header>
-
-    <UuidApp client:load />
+    <UuidApp client:load initialPathname={Astro.url.pathname} />
   </main>
 </BaseLayout>

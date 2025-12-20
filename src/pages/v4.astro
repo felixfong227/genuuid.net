@@ -1,0 +1,81 @@
+---
+import UuidApp from '../components/UuidApp';
+import BaseLayout from '../layouts/BaseLayout.astro';
+export const prerender = true;
+
+const title = 'UUID v4 Generator (Random) | genuuid.net';
+const description =
+    'Generate RFC 4122 UUID version 4 (random) locally in your browser. Copy a single UUID or bulk-generate up to 500 at once.';
+
+const site = Astro.site?.toString() ?? 'https://genuuid.net';
+const pageUrl = new URL(Astro.url.pathname, site).toString();
+
+const faqItems = [
+    {
+        question: 'What is UUID v4?',
+        answer: 'UUID v4 is a randomly generated UUID defined by RFC 4122. It’s the most common choice when you just need a unique identifier.',
+    },
+    {
+        question: 'Should I use UUID v4 or UUID v7?',
+        answer: 'Use v4 when you want purely random IDs. Use v7 when you also want IDs that sort by time (helpful for databases, logs, and pagination).',
+    },
+    {
+        question: 'Can I bulk-generate UUID v4 values here?',
+        answer: 'Yes — generate a single UUID or bulk-generate up to 500 at once and copy them in one click.',
+    },
+] as const;
+
+const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+        {
+            '@type': 'WebSite',
+            '@id': `${site}#website`,
+            url: site,
+            name: 'genuuid.net',
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'WebPage',
+            '@id': `${pageUrl}#webpage`,
+            url: pageUrl,
+            name: title,
+            description,
+            isPartOf: { '@id': `${site}#website` },
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'WebApplication',
+            '@id': `${pageUrl}#app`,
+            name: 'UUID v4 Generator',
+            url: pageUrl,
+            description,
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'Any',
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        },
+        {
+            '@type': 'FAQPage',
+            '@id': `${pageUrl}#faq`,
+            mainEntity: faqItems.map((item) => ({
+                '@type': 'Question',
+                name: item.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.answer,
+                },
+            })),
+        },
+    ],
+};
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <main
+    id="main"
+    class="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6 md:gap-10 md:py-16 lg:py-20"
+  >
+    <UuidApp client:load initialPathname={Astro.url.pathname} />
+  </main>
+</BaseLayout>
+
