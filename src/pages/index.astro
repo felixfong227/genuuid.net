@@ -6,13 +6,174 @@ export const prerender = true;
 const title = 'Instant UUID Generator | genuuid.net';
 const description =
     'Generate RFC 4122 compliant UUIDs (v1, v4, v7) instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
+
+const site = Astro.site?.toString() ?? 'https://genuuid.net';
+const pageUrl = new URL('/', site).toString();
+
+const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+        {
+            '@type': 'WebSite',
+            '@id': `${site}#website`,
+            url: site,
+            name: 'genuuid.net',
+            description,
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'WebPage',
+            '@id': `${pageUrl}#webpage`,
+            url: pageUrl,
+            name: title,
+            description,
+            isPartOf: { '@id': `${site}#website` },
+            inLanguage: 'en',
+        },
+        {
+            '@type': 'WebApplication',
+            '@id': `${pageUrl}#app`,
+            name: 'genuuid.net UUID Generator',
+            url: pageUrl,
+            description,
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'Any',
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        },
+        {
+            '@type': 'FAQPage',
+            '@id': `${pageUrl}#faq`,
+            mainEntity: [
+                {
+                    '@type': 'Question',
+                    name: 'Does this UUID generator run locally in my browser?',
+                    acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'Yes. UUIDs are generated in your browser (no server roundtrips required to create the IDs).',
+                    },
+                },
+                {
+                    '@type': 'Question',
+                    name: 'Which UUID version should I use (v1, v4, v7)?',
+                    acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'Use v4 for random identifiers in most apps. Use v7 when you want sortable IDs (time-ordered) while keeping good randomness. Use v1 when you specifically need the legacy timestamp-based format (it can leak time and node information).',
+                    },
+                },
+                {
+                    '@type': 'Question',
+                    name: 'How many UUIDs can I generate at once?',
+                    acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time and copy them in one click.',
+                    },
+                },
+            ],
+        },
+    ],
+};
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
   <main
     id="main"
     class="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6 md:gap-10 md:py-16 lg:py-20"
   >
+    <header class="animate-float-up space-y-4">
+      <div class="space-y-3">
+        <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+          UUID Generator (v1, v4, v7)
+        </h1>
+        <p class="text-white/70 leading-relaxed max-w-prose">
+          Generate RFC 4122 compliant UUIDs instantly in your browser — fast,
+          private, and ready to copy. Create a single ID or bulk-generate up to
+          500 at once.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 font-mono text-xs text-white/50">
+        <span class="uppercase tracking-widest">Quick links:</span>
+        <a
+          href="/v4/"
+          class="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70 hover:text-emerald-200 hover:border-emerald-400/40 transition-colors"
+        >
+          UUID v4 generator
+        </a>
+        <a
+          href="/v1/"
+          class="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70 hover:text-emerald-200 hover:border-emerald-400/40 transition-colors"
+        >
+          UUID v1 generator
+        </a>
+        <a
+          href="/v7/"
+          class="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70 hover:text-emerald-200 hover:border-emerald-400/40 transition-colors"
+        >
+          UUID v7 generator
+        </a>
+      </div>
+
+      <ul class="grid gap-2 text-sm text-white/60 sm:grid-cols-2">
+        <li class="flex gap-2">
+          <span class="text-emerald-400 shrink-0">•</span>
+          Single UUID + bulk list (up to 500)
+        </li>
+        <li class="flex gap-2">
+          <span class="text-emerald-400 shrink-0">•</span>
+          One-click copy + keyboard shortcuts
+        </li>
+        <li class="flex gap-2">
+          <span class="text-emerald-400 shrink-0">•</span>
+          Paste dashless UUIDs to auto-format
+        </li>
+        <li class="flex gap-2">
+          <span class="text-emerald-400 shrink-0">•</span>
+          Choose UUID v1 / v4 / v7
+        </li>
+      </ul>
+    </header>
+
     <UuidApp client:load />
+
+    <section class="animate-float-up-delay-3 mt-4">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
+        <h2 class="text-lg font-semibold tracking-tight text-white">
+          FAQ
+        </h2>
+        <div class="mt-4 space-y-3">
+          <details class="group rounded-xl border border-white/10 bg-black/20 px-4 py-3">
+            <summary class="cursor-pointer list-none font-mono text-sm text-white/80">
+              Does this UUID generator run locally in my browser?
+            </summary>
+            <p class="mt-2 text-sm text-white/60 leading-relaxed">
+              Yes. UUIDs are generated in your browser (no server roundtrips required
+              to create the IDs).
+            </p>
+          </details>
+
+          <details class="group rounded-xl border border-white/10 bg-black/20 px-4 py-3">
+            <summary class="cursor-pointer list-none font-mono text-sm text-white/80">
+              Which UUID version should I use (v1, v4, v7)?
+            </summary>
+            <p class="mt-2 text-sm text-white/60 leading-relaxed">
+              Use v4 for random identifiers in most apps. Use v7 when you want
+              sortable IDs (time-ordered) while keeping good randomness. Use v1
+              when you specifically need the legacy timestamp-based format (it can
+              leak time and node information).
+            </p>
+          </details>
+
+          <details class="group rounded-xl border border-white/10 bg-black/20 px-4 py-3">
+            <summary class="cursor-pointer list-none font-mono text-sm text-white/80">
+              How many UUIDs can I generate at once?
+            </summary>
+            <p class="mt-2 text-sm text-white/60 leading-relaxed">
+              You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time
+              and copy them in one click.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
   </main>
 </BaseLayout>
