@@ -1,4 +1,5 @@
 ---
+import FaqSection from '../components/FaqSection.astro';
 import UuidApp from '../components/UuidApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 export const prerender = true;
@@ -9,6 +10,21 @@ const description =
 
 const site = Astro.site?.toString() ?? 'https://genuuid.net';
 const pageUrl = new URL(Astro.url.pathname, site).toString();
+
+const faqItems = [
+    {
+        question: 'What is UUID v4?',
+        answer: 'UUID v4 is a randomly generated UUID defined by RFC 4122. It’s the most common choice when you just need a unique identifier.',
+    },
+    {
+        question: 'Should I use UUID v4 or UUID v7?',
+        answer: 'Use v4 when you want purely random IDs. Use v7 when you also want IDs that sort by time (helpful for databases, logs, and pagination).',
+    },
+    {
+        question: 'Can I bulk-generate UUID v4 values here?',
+        answer: 'Yes — generate a single UUID or bulk-generate up to 500 at once and copy them in one click.',
+    },
+] as const;
 
 const jsonLd = {
     '@context': 'https://schema.org',
@@ -38,6 +54,18 @@ const jsonLd = {
             applicationCategory: 'DeveloperApplication',
             operatingSystem: 'Any',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        },
+        {
+            '@type': 'FAQPage',
+            '@id': `${pageUrl}#faq`,
+            mainEntity: faqItems.map((item) => ({
+                '@type': 'Question',
+                name: item.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.answer,
+                },
+            })),
         },
     ],
 };
@@ -87,6 +115,8 @@ const jsonLd = {
     </header>
 
     <UuidApp client:load initialVersion="v4" />
+
+    <FaqSection items={faqItems} />
   </main>
 </BaseLayout>
 

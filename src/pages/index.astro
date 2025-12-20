@@ -1,4 +1,5 @@
 ---
+import FaqSection from '../components/FaqSection.astro';
 import UuidApp from '../components/UuidApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 export const prerender = true;
@@ -9,6 +10,21 @@ const description =
 
 const site = Astro.site?.toString() ?? 'https://genuuid.net';
 const pageUrl = new URL('/', site).toString();
+
+const faqItems = [
+    {
+        question: 'Does this UUID generator run locally in my browser?',
+        answer: 'Yes. UUIDs are generated in your browser (no server roundtrips required to create the IDs).',
+    },
+    {
+        question: 'Which UUID version should I use (v1, v4, v7)?',
+        answer: 'Use v4 for random identifiers in most apps. Use v7 when you want sortable IDs (time-ordered) while keeping good randomness. Use v1 when you specifically need the legacy timestamp-based format (it can leak time and node information).',
+    },
+    {
+        question: 'How many UUIDs can I generate at once?',
+        answer: 'You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time and copy them in one click.',
+    },
+] as const;
 
 const jsonLd = {
     '@context': 'https://schema.org',
@@ -43,32 +59,14 @@ const jsonLd = {
         {
             '@type': 'FAQPage',
             '@id': `${pageUrl}#faq`,
-            mainEntity: [
-                {
-                    '@type': 'Question',
-                    name: 'Does this UUID generator run locally in my browser?',
-                    acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Yes. UUIDs are generated in your browser (no server roundtrips required to create the IDs).',
-                    },
+            mainEntity: faqItems.map((item) => ({
+                '@type': 'Question',
+                name: item.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.answer,
                 },
-                {
-                    '@type': 'Question',
-                    name: 'Which UUID version should I use (v1, v4, v7)?',
-                    acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Use v4 for random identifiers in most apps. Use v7 when you want sortable IDs (time-ordered) while keeping good randomness. Use v1 when you specifically need the legacy timestamp-based format (it can leak time and node information).',
-                    },
-                },
-                {
-                    '@type': 'Question',
-                    name: 'How many UUIDs can I generate at once?',
-                    acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time and copy them in one click.',
-                    },
-                },
-            ],
+            })),
         },
     ],
 };
@@ -135,45 +133,6 @@ const jsonLd = {
 
     <UuidApp client:load />
 
-    <section class="animate-float-up-delay-3 mt-4">
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
-        <h2 class="text-lg font-semibold tracking-tight text-white">
-          FAQ
-        </h2>
-        <div class="mt-4 space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-black/20 px-4 py-3">
-            <summary class="cursor-pointer list-none font-mono text-sm text-white/80">
-              Does this UUID generator run locally in my browser?
-            </summary>
-            <p class="mt-2 text-sm text-white/60 leading-relaxed">
-              Yes. UUIDs are generated in your browser (no server roundtrips required
-              to create the IDs).
-            </p>
-          </details>
-
-          <details class="group rounded-xl border border-white/10 bg-black/20 px-4 py-3">
-            <summary class="cursor-pointer list-none font-mono text-sm text-white/80">
-              Which UUID version should I use (v1, v4, v7)?
-            </summary>
-            <p class="mt-2 text-sm text-white/60 leading-relaxed">
-              Use v4 for random identifiers in most apps. Use v7 when you want
-              sortable IDs (time-ordered) while keeping good randomness. Use v1
-              when you specifically need the legacy timestamp-based format (it can
-              leak time and node information).
-            </p>
-          </details>
-
-          <details class="group rounded-xl border border-white/10 bg-black/20 px-4 py-3">
-            <summary class="cursor-pointer list-none font-mono text-sm text-white/80">
-              How many UUIDs can I generate at once?
-            </summary>
-            <p class="mt-2 text-sm text-white/60 leading-relaxed">
-              You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time
-              and copy them in one click.
-            </p>
-          </details>
-        </div>
-      </div>
-    </section>
+    <FaqSection items={faqItems} />
   </main>
 </BaseLayout>

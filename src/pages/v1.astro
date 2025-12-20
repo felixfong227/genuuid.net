@@ -1,4 +1,5 @@
 ---
+import FaqSection from '../components/FaqSection.astro';
 import UuidApp from '../components/UuidApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 export const prerender = true;
@@ -9,6 +10,21 @@ const description =
 
 const site = Astro.site?.toString() ?? 'https://genuuid.net';
 const pageUrl = new URL(Astro.url.pathname, site).toString();
+
+const faqItems = [
+    {
+        question: 'What is UUID v1?',
+        answer: 'UUID v1 is a timestamp-based UUID format. It combines time with a node identifier to produce unique values.',
+    },
+    {
+        question: 'Is UUID v1 safe to expose publicly?',
+        answer: 'It depends. UUID v1 is useful when you want roughly time-ordered IDs and legacy compatibility, and it can be totally fine for internal identifiers or cases where leaking creation time isn’t a concern. The downside is that v1 encodes a timestamp (and can include a node identifier), which may reveal metadata and ordering. For public-facing IDs, v4 or v7 is usually a better default.',
+    },
+    {
+        question: 'Can I bulk-generate UUID v1 values here?',
+        answer: 'Yes — generate a single UUID or bulk-generate up to 500 at once and copy them in one click.',
+    },
+] as const;
 
 const jsonLd = {
     '@context': 'https://schema.org',
@@ -38,6 +54,18 @@ const jsonLd = {
             applicationCategory: 'DeveloperApplication',
             operatingSystem: 'Any',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        },
+        {
+            '@type': 'FAQPage',
+            '@id': `${pageUrl}#faq`,
+            mainEntity: faqItems.map((item) => ({
+                '@type': 'Question',
+                name: item.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.answer,
+                },
+            })),
         },
     ],
 };
@@ -87,6 +115,8 @@ const jsonLd = {
     </header>
 
     <UuidApp client:load initialVersion="v1" />
+
+    <FaqSection items={faqItems} />
   </main>
 </BaseLayout>
 
