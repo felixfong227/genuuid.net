@@ -10,8 +10,14 @@ const UuidVersionContext = createContext<UuidVersionContextType | undefined>(
     undefined,
 );
 
-export function UuidVersionProvider({ children }: { children: ReactNode }) {
-    const [version, setVersion] = useState<UuidVersion>('v4');
+export function UuidVersionProvider({
+    children,
+    initialVersion = 'v4',
+}: {
+    children: ReactNode;
+    initialVersion?: UuidVersion;
+}) {
+    const [version, setVersion] = useState<UuidVersion>(initialVersion);
 
     return (
         <UuidVersionContext.Provider value={{ version, setVersion }}>

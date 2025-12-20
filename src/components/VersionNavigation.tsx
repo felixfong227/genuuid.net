@@ -3,13 +3,13 @@ import { clsx } from 'clsx';
 import { useUuidVersion } from './UuidVersionContext';
 
 const versions = [
-    { id: 'v4', label: 'v4', desc: 'Random' },
-    { id: 'v1', label: 'v1', desc: 'Timestamp' },
-    { id: 'v7', label: 'v7', desc: 'Unix Time' },
+    { id: 'v4', label: 'v4', desc: 'Random', href: '/v4/' },
+    { id: 'v1', label: 'v1', desc: 'Timestamp', href: '/v1/' },
+    { id: 'v7', label: 'v7', desc: 'Unix Time', href: '/v7/' },
 ] as const;
 
 export default function VersionNavigation() {
-    const { version, setVersion } = useUuidVersion();
+    const { version } = useUuidVersion();
 
     return (
         <nav aria-label="UUID versions" className="animate-float-up">
@@ -17,10 +17,9 @@ export default function VersionNavigation() {
                 {versions.map((v) => {
                     const isActive = version === v.id;
                     return (
-                        <button
+                        <a
                             key={v.id}
-                            type="button"
-                            onClick={() => setVersion(v.id)}
+                            href={v.href}
                             className={clsx(
                                 'relative flex flex-col items-center justify-center px-5 py-2.5 rounded-lg font-mono text-sm transition-all duration-200 cursor-pointer',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
@@ -43,7 +42,7 @@ export default function VersionNavigation() {
                             >
                                 {v.desc}
                             </span>
-                        </button>
+                        </a>
                     );
                 })}
             </div>
