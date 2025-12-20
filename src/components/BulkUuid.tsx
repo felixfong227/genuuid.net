@@ -36,35 +36,35 @@ function BulkUuidSection({
     return (
         <section
             aria-labelledby="bulk-heading"
-            className="animate-float-up-delay-2"
+            className="relative animate-float-up-delay-2 mb-8"
         >
             <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-[0_1.5rem_4rem_-1rem_rgba(56,189,248,0.2)]">
-                <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-black/20">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                            <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                <div className="flex items-center justify-between gap-2 px-4 sm:px-5 py-3 border-b border-white/10 bg-black/20">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></div>
+                            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/80"></div>
+                            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/80"></div>
                         </div>
                         <h2
                             id="bulk-heading"
-                            className="font-mono text-sm text-white/60 uppercase tracking-widest"
+                            className="font-mono text-xs sm:text-sm text-white/60 uppercase tracking-widest truncate"
                         >
-                            Bulk Generator
-                            <span className="text-sky-400 ml-2">{version}</span>
+                            <span className="hidden xs:inline">Bulk </span>Generator
+                            <span className="text-sky-400 ml-1 sm:ml-2">{version}</span>
                         </h2>
                     </div>
                 </div>
 
-                <div className="p-6 border-b border-white/10">
+                <div className="p-4 sm:p-6 border-b border-white/10">
                     <form
-                        className="flex flex-wrap items-center gap-4"
+                        className="flex flex-wrap items-center gap-3 sm:gap-4"
                         onSubmit={(event) => {
                             event.preventDefault();
                             onGenerate();
                         }}
                     >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                             <span className="text-sky-400 font-mono text-sm">$</span>
                             <span className="text-white/40 font-mono text-xs uppercase tracking-widest">count</span>
                             <input
@@ -111,7 +111,7 @@ function BulkUuidSection({
                     </form>
                 </div>
 
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <span className="text-sky-400 font-mono text-sm">→</span>
@@ -161,7 +161,7 @@ function BulkUuidSection({
                 {bulkStatus}
             </output>
             {bulkStatus && (
-                <div className="mt-3 flex items-center gap-2 text-xs font-mono text-sky-200 animate-float-up">
+                <div className="absolute -bottom-6 left-0 flex items-center gap-2 text-xs font-mono text-sky-200">
                     <span className="text-sky-400">→</span>
                     {bulkStatus}
                 </div>
