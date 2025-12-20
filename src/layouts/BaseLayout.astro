@@ -9,7 +9,10 @@ const {
 import '../styles/global.css';
 import PostHog from '../components/posthog.astro';
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://genuuid.net');
+const canonicalURL = new URL(
+    Astro.url.pathname,
+    Astro.site ?? 'https://genuuid.net',
+);
 ---
 
 <!doctype html>

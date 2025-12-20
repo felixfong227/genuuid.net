@@ -1,3 +1,5 @@
+import { clsx } from 'clsx';
+
 import { useUuidVersion } from './UuidVersionContext';
 
 const versions = [
@@ -10,10 +12,7 @@ export default function VersionNavigation() {
     const { version, setVersion } = useUuidVersion();
 
     return (
-        <nav
-            aria-label="UUID versions"
-            className="animate-float-up"
-        >
+        <nav aria-label="UUID versions" className="animate-float-up">
             <div className="inline-flex items-stretch rounded-xl border border-white/10 bg-white/5 p-1">
                 {versions.map((v) => {
                     const isActive = version === v.id;
@@ -22,21 +21,26 @@ export default function VersionNavigation() {
                             key={v.id}
                             type="button"
                             onClick={() => setVersion(v.id)}
-                            className={`
-                                relative flex flex-col items-center justify-center px-5 py-2.5 rounded-lg
-                                font-mono text-sm transition-all duration-200 cursor-pointer
-                                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
-                                ${isActive
+                            className={clsx(
+                                'relative flex flex-col items-center justify-center px-5 py-2.5 rounded-lg font-mono text-sm transition-all duration-200 cursor-pointer',
+                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+                                isActive
                                     ? 'bg-white text-slate-950 shadow-lg shadow-white/20'
-                                    : 'text-white/40 hover:text-white/70 hover:bg-white/5'
-                                }
-                            `}
+                                    : 'text-white/40 hover:text-white/70 hover:bg-white/5',
+                            )}
                             aria-current={isActive ? 'page' : undefined}
                         >
                             <span className="font-semibold tracking-tight">
                                 {v.label}
                             </span>
-                            <span className={`text-[10px] uppercase tracking-widest mt-0.5 ${isActive ? 'text-slate-600' : 'text-white/30'}`}>
+                            <span
+                                className={clsx(
+                                    'text-[10px] uppercase tracking-widest mt-0.5',
+                                    isActive
+                                        ? 'text-slate-600'
+                                        : 'text-white/30',
+                                )}
+                            >
                                 {v.desc}
                             </span>
                         </button>

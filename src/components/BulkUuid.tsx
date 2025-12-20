@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
+import { useTimedStatus } from '../hooks/useTimedStatus';
 import { generateMany } from '../lib/uuid';
 import CopyButton from './CopyButton';
 import { useUuidVersion } from './UuidVersionContext';
@@ -50,8 +51,11 @@ function BulkUuidSection({
                             id="bulk-heading"
                             className="font-mono text-xs sm:text-sm text-white/60 uppercase tracking-widest truncate"
                         >
-                            <span className="hidden xs:inline">Bulk </span>Generator
-                            <span className="text-sky-400 ml-1 sm:ml-2">{version}</span>
+                            <span className="hidden xs:inline">Bulk </span>
+                            Generator
+                            <span className="text-sky-400 ml-1 sm:ml-2">
+                                {version}
+                            </span>
                         </h2>
                     </div>
                 </div>
@@ -65,8 +69,12 @@ function BulkUuidSection({
                         }}
                     >
                         <div className="flex items-center gap-2 sm:gap-3">
-                            <span className="text-sky-400 font-mono text-sm">$</span>
-                            <span className="text-white/40 font-mono text-xs uppercase tracking-widest">count</span>
+                            <span className="text-sky-400 font-mono text-sm">
+                                $
+                            </span>
+                            <span className="text-white/40 font-mono text-xs uppercase tracking-widest">
+                                count
+                            </span>
                             <input
                                 type="number"
                                 inputMode="numeric"
@@ -93,8 +101,20 @@ function BulkUuidSection({
                                 className="group flex items-center gap-2 px-5 py-2.5 rounded-lg bg-sky-400 text-slate-950 font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-sky-300 shadow-lg shadow-sky-400/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                                 onClick={onGenerate}
                             >
-                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                <svg
+                                    className="w-3.5 h-3.5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2.5}
+                                    aria-hidden="true"
+                                    focusable="false"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                                    />
                                 </svg>
                                 Generate
                             </button>
@@ -114,8 +134,12 @@ function BulkUuidSection({
                 <div className="p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-sky-400 font-mono text-sm">→</span>
-                            <span className="text-white/40 font-mono text-xs uppercase tracking-widest">output</span>
+                            <span className="text-sky-400 font-mono text-sm">
+                                →
+                            </span>
+                            <span className="text-white/40 font-mono text-xs uppercase tracking-widest">
+                                output
+                            </span>
                         </div>
                         <span className="font-mono text-xs text-white/30 tabular-nums">
                             {bulkUuids.length} / 500
@@ -144,7 +168,9 @@ function BulkUuidSection({
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-8 text-center">
-                                <div className="text-4xl mb-3 opacity-20">∅</div>
+                                <div className="text-4xl mb-3 opacity-20">
+                                    ∅
+                                </div>
                                 <p className="text-white/40 font-mono text-xs">
                                     No UUIDs generated yet
                                 </p>
@@ -174,30 +200,10 @@ export default function BulkUuid() {
     const { version } = useUuidVersion();
     const [bulkCountInput, setBulkCountInput] = useState('10');
     const [bulkUuids, setBulkUuids] = useState<string[]>([]);
-    const [bulkStatus, setBulkStatus] = useState('');
-    const bulkStatusTimer = useRef<number | null>(null);
+    const { status: bulkStatus, schedule: scheduleBulkStatus } =
+        useTimedStatus(BULK_STATUS_TIMEOUT);
 
     const [bulkHasError, setBulkHasError] = useState(false);
-
-    useEffect(() => {
-        return () => {
-            if (bulkStatusTimer.current)
-                window.clearTimeout(bulkStatusTimer.current);
-        };
-    }, []);
-
-    const scheduleBulkStatus = (
-        message: string,
-        timeout = BULK_STATUS_TIMEOUT,
-    ) => {
-        setBulkStatus(message);
-        if (bulkStatusTimer.current)
-            window.clearTimeout(bulkStatusTimer.current);
-        bulkStatusTimer.current = window.setTimeout(
-            () => setBulkStatus(''),
-            timeout,
-        );
-    };
 
     const parseBulkCount = (): number | null => {
         const parsed = Number.parseInt(bulkCountInput, 10);
@@ -249,5 +255,3 @@ export default function BulkUuid() {
         />
     );
 }
-
-export { BulkUuidSection };
