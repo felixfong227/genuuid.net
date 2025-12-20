@@ -9,7 +9,7 @@ const versions = [
 ] as const;
 
 export default function VersionNavigation() {
-    const { version } = useUuidVersion();
+    const { version, navigateToVersion } = useUuidVersion();
 
     return (
         <nav aria-label="UUID versions" className="animate-float-up">
@@ -20,6 +20,20 @@ export default function VersionNavigation() {
                         <a
                             key={v.id}
                             href={v.href}
+                            onClick={(event) => {
+                                if (
+                                    event.defaultPrevented ||
+                                    event.button !== 0 ||
+                                    event.metaKey ||
+                                    event.altKey ||
+                                    event.ctrlKey ||
+                                    event.shiftKey
+                                ) {
+                                    return;
+                                }
+                                event.preventDefault();
+                                navigateToVersion(v.id);
+                            }}
                             className={clsx(
                                 'relative flex flex-col items-center justify-center px-5 py-2.5 rounded-lg font-mono text-sm transition-all duration-200 cursor-pointer',
                                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',

@@ -1,5 +1,4 @@
 ---
-import FaqSection from '../components/FaqSection.astro';
 import UuidApp from '../components/UuidApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 export const prerender = true;
@@ -76,47 +75,7 @@ const jsonLd = {
     id="main"
     class="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6 md:gap-10 md:py-16 lg:py-20"
   >
-    <header class="animate-float-up space-y-4">
-      <div class="space-y-3">
-        <p class="font-mono text-xs uppercase tracking-widest text-white/40">
-          genuuid.net
-        </p>
-        <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-          UUID v4 Generator (Random)
-        </h1>
-        <p class="text-white/70 leading-relaxed max-w-prose">
-          UUID v4 is the most common UUID format: a randomly-generated identifier
-          defined by RFC 4122. Use it when you just need a unique ID and don’t
-          need the IDs to be time-sortable.
-        </p>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2 font-mono text-xs text-white/50">
-        <span class="uppercase tracking-widest">More:</span>
-        <a
-          href="/"
-          class="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70 hover:text-emerald-200 hover:border-emerald-400/40 transition-colors"
-        >
-          All versions
-        </a>
-        <a
-          href="/v1/"
-          class="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70 hover:text-emerald-200 hover:border-emerald-400/40 transition-colors"
-        >
-          UUID v1
-        </a>
-        <a
-          href="/v7/"
-          class="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70 hover:text-emerald-200 hover:border-emerald-400/40 transition-colors"
-        >
-          UUID v7
-        </a>
-      </div>
-    </header>
-
-    <UuidApp client:load initialVersion="v4" />
-
-    <FaqSection items={faqItems} />
+    <UuidApp client:load initialPathname={Astro.url.pathname} />
   </main>
 </BaseLayout>
 
