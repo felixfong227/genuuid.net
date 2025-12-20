@@ -1,19 +1,21 @@
-import type { UuidVersion } from '../lib/uuid';
 import BulkUuid from './BulkUuid';
+import { SeoFaq, SeoHeader } from './SeoPanels';
 import SingleUuid from './SingleUuid';
 import { UuidVersionProvider } from './UuidVersionContext';
 import VersionNavigation from './VersionNavigation';
 
 export default function UuidApp({
-    initialVersion,
+    initialPathname,
 }: {
-    initialVersion?: UuidVersion;
+    initialPathname?: string;
 }) {
     return (
-        <UuidVersionProvider initialVersion={initialVersion}>
+        <UuidVersionProvider initialPathname={initialPathname}>
+            <SeoHeader />
             <VersionNavigation />
             <SingleUuid />
             <BulkUuid />
+            <SeoFaq />
         </UuidVersionProvider>
     );
 }
