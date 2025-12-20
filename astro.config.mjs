@@ -34,7 +34,9 @@ export default defineConfig({
                 plugins: [['babel-plugin-react-compiler']],
             },
         }),
-        sitemap(),
+        sitemap({
+            filter: (page) => !page.includes('/gtf'),
+        }),
     ],
     output: 'server',
 });
