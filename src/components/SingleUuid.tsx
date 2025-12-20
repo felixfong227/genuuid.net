@@ -1,33 +1,31 @@
 import {
+    type ClipboardEvent,
     useCallback,
     useEffect,
-    useMemo,
     useRef,
     useState,
-    type ClipboardEvent,
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-
+import { useTimedStatus } from '../hooks/useTimedStatus';
 import { generateUuid } from '../lib/uuid';
 import CopyButton from './CopyButton';
 import { useUuidVersion } from './UuidVersionContext';
 
-const PLACEHOLDER_UUID = '------------------------------------';
 const SINGLE_STATUS_TIMEOUT = 2500;
 
-const INPUT_CONFIG = [
-    { maxLength: 8, flex: 2 },
-    { maxLength: 4, flex: 1 },
-    { maxLength: 4, flex: 1 },
-    { maxLength: 4, flex: 1 },
-    { maxLength: 12, flex: 3 },
-];
+const UUID_PARTS = [
+    { id: 'time_low', maxLength: 8 },
+    { id: 'time_mid', maxLength: 4 },
+    { id: 'time_high', maxLength: 4 },
+    { id: 'clock_seq', maxLength: 4 },
+    { id: 'node', maxLength: 12 },
+] as const;
 
 export default function SingleUuid() {
     const { version } = useUuidVersion();
-    const [singleUuid, setSingleUuid] = useState<string>(PLACEHOLDER_UUID);
-    const [singleStatus, setSingleStatus] = useState('');
-    const singleStatusTimer = useRef<number | null>(null);
+    const [singleUuid, setSingleUuid] = useState('');
+    const { status: singleStatus, schedule: scheduleSingleStatus } =
+        useTimedStatus(SINGLE_STATUS_TIMEOUT);
 
     const handleRegenerate = useCallback(() => {
         setSingleUuid(generateUuid(version));
@@ -35,30 +33,9 @@ export default function SingleUuid() {
 
     useEffect(() => {
         handleRegenerate();
-
-        return () => {
-            if (singleStatusTimer.current)
-                window.clearTimeout(singleStatusTimer.current);
-        };
     }, [handleRegenerate]);
 
-    const hasGeneratedSingle = useMemo(
-        () => singleUuid !== PLACEHOLDER_UUID,
-        [singleUuid],
-    );
-
-    const scheduleSingleStatus = (
-        message: string,
-        timeout = SINGLE_STATUS_TIMEOUT,
-    ) => {
-        setSingleStatus(message);
-        if (singleStatusTimer.current)
-            window.clearTimeout(singleStatusTimer.current);
-        singleStatusTimer.current = window.setTimeout(
-            () => setSingleStatus(''),
-            timeout,
-        );
-    };
+    const canCopy = singleUuid.length > 0;
 
     useHotkeys(
         'g',
@@ -78,7 +55,7 @@ export default function SingleUuid() {
         'c',
         (event) => {
             event.preventDefault();
-            if (hasGeneratedSingle && copyButtonRef.current) {
+            if (canCopy && copyButtonRef.current) {
                 copyButtonRef.current.click();
             } else {
                 scheduleSingleStatus('Generate a UUID first.');
@@ -87,14 +64,14 @@ export default function SingleUuid() {
         {
             enableOnFormTags: false,
         },
-        [hasGeneratedSingle],
+        [canCopy, scheduleSingleStatus],
     );
 
     const handlePartChange = (index: number, value: string) => {
         if (!/^[0-9a-fA-F]*$/.test(value)) return;
 
         const currentParts =
-            singleUuid === PLACEHOLDER_UUID
+            singleUuid.length === 0
                 ? ['', '', '', '', '']
                 : singleUuid.split('-');
 
@@ -138,9 +115,7 @@ export default function SingleUuid() {
     };
 
     const parts =
-        singleUuid === PLACEHOLDER_UUID
-            ? ['', '', '', '', '']
-            : singleUuid.split('-');
+        singleUuid.length === 0 ? ['', '', '', '', ''] : singleUuid.split('-');
     const safeParts = parts.length === 5 ? parts : ['', '', '', '', ''];
 
     return (
@@ -160,8 +135,11 @@ export default function SingleUuid() {
                             id="single-heading"
                             className="font-mono text-xs sm:text-sm text-white/60 uppercase tracking-widest truncate"
                         >
-                            <span className="hidden xs:inline">Single </span>UUID
-                            <span className="text-emerald-400 ml-1 sm:ml-2">{version}</span>
+                            <span className="hidden xs:inline">Single </span>
+                            UUID
+                            <span className="text-emerald-400 ml-1 sm:ml-2">
+                                {version}
+                            </span>
                         </h2>
                     </div>
                     <button
@@ -169,8 +147,20 @@ export default function SingleUuid() {
                         className="group shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-emerald-400 text-slate-950 font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-emerald-300 shadow-lg shadow-emerald-400/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                         onClick={handleRegenerate}
                     >
-                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover:rotate-180 duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <svg
+                            className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover:rotate-180 duration-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
                         </svg>
                         <span className="hidden sm:inline">Regenerate</span>
                         <span className="sm:hidden">New</span>
@@ -179,33 +169,48 @@ export default function SingleUuid() {
 
                 <div className="p-4 sm:p-6">
                     <div className="flex items-center gap-2 mb-3">
-                        <span className="text-emerald-400 font-mono text-sm">$</span>
-                        <span className="text-white/40 font-mono text-xs uppercase tracking-widest">current_uuid</span>
+                        <span className="text-emerald-400 font-mono text-sm">
+                            $
+                        </span>
+                        <span className="text-white/40 font-mono text-xs uppercase tracking-widest">
+                            current_uuid
+                        </span>
                     </div>
-                    
+
                     <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
                         <div className="flex items-center gap-0.5 font-mono text-[13px] xs:text-base sm:text-2xl md:text-3xl pb-2 min-w-max">
-                            {safeParts.map((part, index) => (
-                                <div key={index} className="flex items-center shrink-0">
+                            {UUID_PARTS.map((partConfig, index) => (
+                                <div
+                                    key={partConfig.id}
+                                    className="flex items-center shrink-0"
+                                >
                                     <input
                                         type="text"
-                                        value={part}
-                                        maxLength={INPUT_CONFIG[index].maxLength}
+                                        value={safeParts[index] ?? ''}
+                                        maxLength={partConfig.maxLength}
                                         onChange={(e) =>
-                                            handlePartChange(index, e.target.value)
+                                            handlePartChange(
+                                                index,
+                                                e.target.value,
+                                            )
                                         }
                                         onPaste={handlePaste}
                                         style={{
-                                            width: `${INPUT_CONFIG[index].maxLength + 0.5}ch`,
+                                            width: `${partConfig.maxLength + 0.5}ch`,
                                         }}
                                         className="bg-transparent p-0 text-center font-mono text-emerald-200 outline-none border-b-2 border-transparent focus:border-emerald-400 transition-colors placeholder-white/20 align-baseline"
                                         placeholder={'-'.repeat(
-                                            INPUT_CONFIG[index].maxLength,
+                                            partConfig.maxLength,
                                         )}
                                         aria-label={`UUID part ${index + 1}`}
+                                        autoCapitalize="off"
+                                        autoCorrect="off"
+                                        spellCheck={false}
                                     />
                                     {index < 4 && (
-                                        <span className="text-white/30 mx-0.5">-</span>
+                                        <span className="text-white/30 mx-0.5">
+                                            -
+                                        </span>
                                     )}
                                 </div>
                             ))}
@@ -215,12 +220,16 @@ export default function SingleUuid() {
                     <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:mt-6 pt-4 border-t border-white/10">
                         <div className="hidden sm:flex items-center gap-3 text-white/40 text-xs font-mono">
                             <span className="flex items-center gap-1.5">
-                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">G</kbd>
+                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">
+                                    G
+                                </kbd>
                                 <span>regenerate</span>
                             </span>
                             <span className="text-white/20">│</span>
                             <span className="flex items-center gap-1.5">
-                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">C</kbd>
+                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">
+                                    C
+                                </kbd>
                                 <span>copy</span>
                             </span>
                         </div>
@@ -228,9 +237,11 @@ export default function SingleUuid() {
                             ref={copyButtonRef}
                             text={singleUuid}
                             defaultLabel="Copy"
-                            disabled={!hasGeneratedSingle}
+                            disabled={!canCopy}
                             className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 hover:border-emerald-400/50 hover:bg-emerald-400/10 font-mono text-xs font-semibold uppercase tracking-wider text-white/80 hover:text-emerald-200 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/20 disabled:hover:bg-transparent disabled:hover:text-white/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                            onCopyError={(message) => scheduleSingleStatus(message)}
+                            onCopyError={(message) =>
+                                scheduleSingleStatus(message)
+                            }
                             aria-label="Copy UUID"
                         />
                     </div>
