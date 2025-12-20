@@ -4,7 +4,7 @@ import UuidApp from '../components/UuidApp';
 import '../styles/global.css';
 export const prerender = true;
 
-const title = 'Instant UUID Generator | genuuid.netconst';
+const title = 'Instant UUID Generator | genuuid.net';
 const description =
     'Generate RFC 4122 compliant UUIDs (v1, v4, v7) instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
 ---
@@ -12,22 +12,8 @@ const description =
 <BaseLayout title={title} description={description}>
   <main
     id="main"
-    class="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-14 px-6 pb-16 pt-20 sm:px-10 md:gap-16 md:pt-24"
+    class="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6 md:gap-10 md:py-16 lg:py-20"
   >
-    <div
-      class="absolute inset-x-0 top-10 -z-10 hidden h-64 rounded-full bg-emerald-500/20 blur-3xl md:block"
-      aria-hidden="true"
-    >
-    </div>
-
-    <header class="flex flex-col gap-6 text-center md:text-left">
-      <h1
-        class="text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl"
-      >
-        Instant UUID Generator
-      </h1>
-    </header>
-
     <UuidApp client:load />
   </main>
 </BaseLayout>

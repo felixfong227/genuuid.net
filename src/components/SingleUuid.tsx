@@ -4,7 +4,6 @@ import {
     useMemo,
     useRef,
     useState,
-    type ChangeEvent,
     type ClipboardEvent,
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -92,7 +91,6 @@ export default function SingleUuid() {
     );
 
     const handlePartChange = (index: number, value: string) => {
-        // Allow only hex chars
         if (!/^[0-9a-fA-F]*$/.test(value)) return;
 
         const currentParts =
@@ -100,7 +98,6 @@ export default function SingleUuid() {
                 ? ['', '', '', '', '']
                 : singleUuid.split('-');
 
-        // Ensure we have 5 parts
         while (currentParts.length < 5) currentParts.push('');
 
         currentParts[index] = value;
@@ -110,7 +107,6 @@ export default function SingleUuid() {
     const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
         const text = event.clipboardData.getData('text').trim();
 
-        // Regex for 32 hex chars (dashless UUID)
         const dashlessMatch = text.match(
             /^([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})$/,
         );
@@ -129,7 +125,6 @@ export default function SingleUuid() {
             return;
         }
 
-        // Regex for standard UUID
         if (
             /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
                 text,
@@ -151,34 +146,45 @@ export default function SingleUuid() {
     return (
         <section
             aria-labelledby="single-heading"
-            className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_1.875rem_5rem_-1.25rem_rgba(16,185,129,0.35)] backdrop-blur-sm"
+            className="relative animate-float-up-delay-1 mb-8"
         >
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="space-y-2">
-                    <h2
-                        id="single-heading"
-                        className="text-2xl font-semibold text-white md:text-3xl"
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-[0_1.5rem_4rem_-1rem_rgba(16,185,129,0.25)]">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-black/20">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                            <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                        </div>
+                        <h2
+                            id="single-heading"
+                            className="font-mono text-sm text-white/60 uppercase tracking-widest"
+                        >
+                            Single UUID
+                            <span className="text-emerald-400 ml-2">{version}</span>
+                        </h2>
+                    </div>
+                    <button
+                        type="button"
+                        className="group flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-400 text-slate-950 font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-emerald-300 shadow-lg shadow-emerald-400/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                        onClick={handleRegenerate}
                     >
-                        Single UUID{version}
-                    </h2>
+                        <svg className="w-3.5 h-3.5 transition-transform group-hover:rotate-180 duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Regenerate
+                    </button>
                 </div>
-                <button
-                    type="button"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-400/40 transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                    onClick={handleRegenerate}
-                >
-                    Regenerate
-                </button>
-            </div>
 
-            <div className="mt-7 flex flex-col gap-4 lg:flex-row lg:items-center">
-                <div className="relative flex-1 overflow-x-auto rounded-2xl border border-white/10 bg-black/60 px-5 py-4">
-                    <span className="text-xs uppercase tracking-[0.35em] text-white/35">
-                        Current UUID
-                    </span>
-                    <div className="mt-3 flex items-baseline font-mono text-lg text-emerald-200 md:text-xl">
+                <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="text-emerald-400 font-mono text-sm">$</span>
+                        <span className="text-white/40 font-mono text-xs uppercase tracking-widest">current_uuid</span>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-1 font-mono text-2xl md:text-3xl">
                         {safeParts.map((part, index) => (
-                            <div key={index} className="flex items-baseline">
+                            <div key={index} className="flex items-center">
                                 <input
                                     type="text"
                                     value={part}
@@ -190,52 +196,52 @@ export default function SingleUuid() {
                                     style={{
                                         width: `${INPUT_CONFIG[index].maxLength}ch`,
                                     }}
-                                    className="bg-transparent p-0 text-center font-mono outline-none border-b-2 border-transparent focus:border-emerald-400 placeholder-white/20 align-baseline"
+                                    className="bg-transparent p-0 text-center font-mono text-emerald-200 outline-none border-b-2 border-transparent focus:border-emerald-400 transition-colors placeholder-white/20 align-baseline tracking-wider"
                                     placeholder={'-'.repeat(
                                         INPUT_CONFIG[index].maxLength,
                                     )}
                                     aria-label={`UUID part ${index + 1}`}
                                 />
                                 {index < 4 && (
-                                    <span className="select-none text-white/30">
-                                        -
-                                    </span>
+                                    <span className="text-white/30 mx-0.5">-</span>
                                 )}
                             </div>
                         ))}
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <CopyButton
-                        ref={copyButtonRef}
-                        text={singleUuid}
-                        defaultLabel="Copy"
-                        disabled={!hasGeneratedSingle}
-                        className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 w-24 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-white/30"
-                        onCopyError={(message) => scheduleSingleStatus(message)}
-                        aria-label="Copy UUID"
-                    />
+
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+                        <div className="flex items-center gap-3 text-white/40 text-xs font-mono">
+                            <span className="flex items-center gap-1.5">
+                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">G</kbd>
+                                <span>regenerate</span>
+                            </span>
+                            <span className="text-white/20">│</span>
+                            <span className="flex items-center gap-1.5">
+                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">C</kbd>
+                                <span>copy</span>
+                            </span>
+                        </div>
+                        <CopyButton
+                            ref={copyButtonRef}
+                            text={singleUuid}
+                            defaultLabel="Copy"
+                            disabled={!hasGeneratedSingle}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 hover:border-emerald-400/50 hover:bg-emerald-400/10 font-mono text-xs font-semibold uppercase tracking-wider text-white/80 hover:text-emerald-200 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/20 disabled:hover:bg-transparent disabled:hover:text-white/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                            onCopyError={(message) => scheduleSingleStatus(message)}
+                            aria-label="Copy UUID"
+                        />
+                    </div>
                 </div>
             </div>
 
-            <p className="mt-6 text-xs text-white/55">
-                Shortcuts: press{' '}
-                <span className="rounded border border-white/25 bg-white/10 px-1.5 py-0.5 font-mono text-[0.7rem]">
-                    g
-                </span>{' '}
-                to regenerate,{' '}
-                <span className="rounded border border-white/25 bg-white/10 px-1.5 py-0.5 font-mono text-[0.7rem]">
-                    c
-                </span>{' '}
-                to copy.
-            </p>
             <output className="sr-only" aria-live="polite">
                 {singleStatus}
             </output>
             {singleStatus && (
-                <p className="mt-4 text-xs text-emerald-200" aria-hidden="true">
+                <div className="absolute -bottom-6 left-0 flex items-center gap-2 text-xs font-mono text-emerald-200">
+                    <span className="text-emerald-400">→</span>
                     {singleStatus}
-                </p>
+                </div>
             )}
         </section>
     );
