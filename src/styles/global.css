@@ -1,1 +1,96 @@
 @import "tailwindcss";
+
+@theme {
+    --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@master/fonts/webfonts/JetBrainsMono-Regular.woff2")
+        format("woff2");
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@master/fonts/webfonts/JetBrainsMono-Medium.woff2")
+        format("woff2");
+    font-weight: 500;
+    font-display: swap;
+}
+
+html {
+    color-scheme: dark;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: #34d399;
+    color: #020617;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+@keyframes float-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-float-up {
+    animation: float-up 0.5s var(--ease-smooth) forwards;
+}
+
+.animate-float-up-delay-1 {
+    animation: float-up 0.5s var(--ease-smooth) 0.05s forwards;
+    opacity: 0;
+}
+
+.animate-float-up-delay-2 {
+    animation: float-up 0.5s var(--ease-smooth) 0.1s forwards;
+    opacity: 0;
+}
+
+.animate-float-up-delay-3 {
+    animation: float-up 0.5s var(--ease-smooth) 0.15s forwards;
+    opacity: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}

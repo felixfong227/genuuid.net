@@ -1,34 +1,31 @@
 import {
+    type ClipboardEvent,
     useCallback,
     useEffect,
-    useMemo,
     useRef,
     useState,
-    type ChangeEvent,
-    type ClipboardEvent,
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-
+import { useTimedStatus } from '../hooks/useTimedStatus';
 import { generateUuid } from '../lib/uuid';
 import CopyButton from './CopyButton';
 import { useUuidVersion } from './UuidVersionContext';
 
-const PLACEHOLDER_UUID = '------------------------------------';
 const SINGLE_STATUS_TIMEOUT = 2500;
 
-const INPUT_CONFIG = [
-    { maxLength: 8, flex: 2 },
-    { maxLength: 4, flex: 1 },
-    { maxLength: 4, flex: 1 },
-    { maxLength: 4, flex: 1 },
-    { maxLength: 12, flex: 3 },
-];
+const UUID_PARTS = [
+    { id: 'time_low', maxLength: 8 },
+    { id: 'time_mid', maxLength: 4 },
+    { id: 'time_high', maxLength: 4 },
+    { id: 'clock_seq', maxLength: 4 },
+    { id: 'node', maxLength: 12 },
+] as const;
 
 export default function SingleUuid() {
     const { version } = useUuidVersion();
-    const [singleUuid, setSingleUuid] = useState<string>(PLACEHOLDER_UUID);
-    const [singleStatus, setSingleStatus] = useState('');
-    const singleStatusTimer = useRef<number | null>(null);
+    const [singleUuid, setSingleUuid] = useState('');
+    const { status: singleStatus, schedule: scheduleSingleStatus } =
+        useTimedStatus(SINGLE_STATUS_TIMEOUT);
 
     const handleRegenerate = useCallback(() => {
         setSingleUuid(generateUuid(version));
@@ -36,30 +33,9 @@ export default function SingleUuid() {
 
     useEffect(() => {
         handleRegenerate();
-
-        return () => {
-            if (singleStatusTimer.current)
-                window.clearTimeout(singleStatusTimer.current);
-        };
     }, [handleRegenerate]);
 
-    const hasGeneratedSingle = useMemo(
-        () => singleUuid !== PLACEHOLDER_UUID,
-        [singleUuid],
-    );
-
-    const scheduleSingleStatus = (
-        message: string,
-        timeout = SINGLE_STATUS_TIMEOUT,
-    ) => {
-        setSingleStatus(message);
-        if (singleStatusTimer.current)
-            window.clearTimeout(singleStatusTimer.current);
-        singleStatusTimer.current = window.setTimeout(
-            () => setSingleStatus(''),
-            timeout,
-        );
-    };
+    const canCopy = singleUuid.length > 0;
 
     useHotkeys(
         'g',
@@ -79,7 +55,7 @@ export default function SingleUuid() {
         'c',
         (event) => {
             event.preventDefault();
-            if (hasGeneratedSingle && copyButtonRef.current) {
+            if (canCopy && copyButtonRef.current) {
                 copyButtonRef.current.click();
             } else {
                 scheduleSingleStatus('Generate a UUID first.');
@@ -88,19 +64,41 @@ export default function SingleUuid() {
         {
             enableOnFormTags: false,
         },
-        [hasGeneratedSingle],
+        [canCopy, scheduleSingleStatus],
+    );
+
+    // Focus-trapped hotkey for mod+c (copy UUID) when inputs are focused
+    const inputContainerRef = useHotkeys<HTMLDivElement>(
+        'mod+c',
+        (event) => {
+            const target = event.target;
+            if (target instanceof HTMLInputElement) {
+                const start = target.selectionStart;
+                const end = target.selectionEnd;
+                if (start !== null && end !== null && end > start) return;
+            }
+
+            if (canCopy && copyButtonRef.current) {
+                event.preventDefault();
+                copyButtonRef.current.click();
+            } else {
+                scheduleSingleStatus('Generate a UUID first.');
+            }
+        },
+        {
+            enableOnFormTags: ['INPUT'],
+        },
+        [canCopy, scheduleSingleStatus],
     );
 
     const handlePartChange = (index: number, value: string) => {
-        // Allow only hex chars
         if (!/^[0-9a-fA-F]*$/.test(value)) return;
 
         const currentParts =
-            singleUuid === PLACEHOLDER_UUID
+            singleUuid.length === 0
                 ? ['', '', '', '', '']
                 : singleUuid.split('-');
 
-        // Ensure we have 5 parts
         while (currentParts.length < 5) currentParts.push('');
 
         currentParts[index] = value;
@@ -110,7 +108,6 @@ export default function SingleUuid() {
     const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
         const text = event.clipboardData.getData('text').trim();
 
-        // Regex for 32 hex chars (dashless UUID)
         const dashlessMatch = text.match(
             /^([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})$/,
         );
@@ -129,7 +126,6 @@ export default function SingleUuid() {
             return;
         }
 
-        // Regex for standard UUID
         if (
             /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
                 text,
@@ -143,99 +139,150 @@ export default function SingleUuid() {
     };
 
     const parts =
-        singleUuid === PLACEHOLDER_UUID
-            ? ['', '', '', '', '']
-            : singleUuid.split('-');
+        singleUuid.length === 0 ? ['', '', '', '', ''] : singleUuid.split('-');
     const safeParts = parts.length === 5 ? parts : ['', '', '', '', ''];
 
     return (
         <section
             aria-labelledby="single-heading"
-            className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_1.875rem_5rem_-1.25rem_rgba(16,185,129,0.35)] backdrop-blur-sm"
+            className="relative animate-float-up-delay-1 mb-8"
         >
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="space-y-2">
-                    <h2
-                        id="single-heading"
-                        className="text-2xl font-semibold text-white md:text-3xl"
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-[0_1.5rem_4rem_-1rem_rgba(16,185,129,0.25)]">
+                <div className="flex items-center justify-between gap-2 px-4 sm:px-5 py-3 border-b border-white/10 bg-black/20">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></div>
+                            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/80"></div>
+                            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/80"></div>
+                        </div>
+                        <h2
+                            id="single-heading"
+                            className="font-mono text-xs sm:text-sm text-white/60 uppercase tracking-widest truncate"
+                        >
+                            <span className="hidden xs:inline">Single </span>
+                            UUID
+                            <span className="text-emerald-400 ml-1 sm:ml-2">
+                                {version}
+                            </span>
+                        </h2>
+                    </div>
+                    <button
+                        type="button"
+                        className="group shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-emerald-400 text-slate-950 font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-emerald-300 shadow-lg shadow-emerald-400/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                        onClick={handleRegenerate}
                     >
-                        Single UUID{version}
-                    </h2>
+                        <svg
+                            className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover:rotate-180 duration-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                        </svg>
+                        <span className="hidden sm:inline">Regenerate</span>
+                        <span className="sm:hidden">New</span>
+                    </button>
                 </div>
-                <button
-                    type="button"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-400/40 transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                    onClick={handleRegenerate}
-                >
-                    Regenerate
-                </button>
-            </div>
 
-            <div className="mt-7 flex flex-col gap-4 lg:flex-row lg:items-center">
-                <div className="relative flex-1 overflow-x-auto rounded-2xl border border-white/10 bg-black/60 px-5 py-4">
-                    <span className="text-xs uppercase tracking-[0.35em] text-white/35">
-                        Current UUID
-                    </span>
-                    <div className="mt-3 flex items-baseline font-mono text-lg text-emerald-200 md:text-xl">
-                        {safeParts.map((part, index) => (
-                            <div key={index} className="flex items-baseline">
-                                <input
-                                    type="text"
-                                    value={part}
-                                    maxLength={INPUT_CONFIG[index].maxLength}
-                                    onChange={(e) =>
-                                        handlePartChange(index, e.target.value)
-                                    }
-                                    onPaste={handlePaste}
-                                    style={{
-                                        width: `${INPUT_CONFIG[index].maxLength}ch`,
-                                    }}
-                                    className="bg-transparent p-0 text-center font-mono outline-none border-b-2 border-transparent focus:border-emerald-400 placeholder-white/20 align-baseline"
-                                    placeholder={'-'.repeat(
-                                        INPUT_CONFIG[index].maxLength,
+                <div className="p-4 sm:p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="text-emerald-400 font-mono text-sm">
+                            $
+                        </span>
+                        <span className="text-white/40 font-mono text-xs uppercase tracking-widest">
+                            current_uuid
+                        </span>
+                    </div>
+
+                    <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div
+                            ref={inputContainerRef}
+                            className="flex items-center gap-0.5 font-mono text-[13px] xs:text-base sm:text-2xl md:text-3xl pb-2 min-w-max"
+                        >
+                            {UUID_PARTS.map((partConfig, index) => (
+                                <div
+                                    key={partConfig.id}
+                                    className="flex items-center shrink-0"
+                                >
+                                    <input
+                                        type="text"
+                                        value={safeParts[index] ?? ''}
+                                        maxLength={partConfig.maxLength}
+                                        onChange={(e) =>
+                                            handlePartChange(
+                                                index,
+                                                e.target.value,
+                                            )
+                                        }
+                                        onPaste={handlePaste}
+                                        style={{
+                                            width: `${partConfig.maxLength + 0.5}ch`,
+                                        }}
+                                        className="p-0 text-center font-mono outline-none border-b-2 placeholder-white/20 align-baseline bg-transparent text-emerald-200 border-transparent focus:border-emerald-400 transition-colors"
+                                        placeholder={'-'.repeat(
+                                            partConfig.maxLength,
+                                        )}
+                                        aria-label={`UUID part ${index + 1}`}
+                                        autoCapitalize="off"
+                                        autoCorrect="off"
+                                        spellCheck={false}
+                                    />
+                                    {index < 4 && (
+                                        <span className="text-white/30 mx-0.5">
+                                            -
+                                        </span>
                                     )}
-                                    aria-label={`UUID part ${index + 1}`}
-                                />
-                                {index < 4 && (
-                                    <span className="select-none text-white/30">
-                                        -
-                                    </span>
-                                )}
-                            </div>
-                        ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:mt-6 pt-4 border-t border-white/10">
+                        <div className="hidden sm:flex items-center gap-3 text-white/40 text-xs font-mono">
+                            <span className="flex items-center gap-1.5">
+                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">
+                                    G
+                                </kbd>
+                                <span>regenerate</span>
+                            </span>
+                            <span className="text-white/20">│</span>
+                            <span className="flex items-center gap-1.5">
+                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">
+                                    C
+                                </kbd>
+                                <span>copy</span>
+                            </span>
+                        </div>
+                        <CopyButton
+                            ref={copyButtonRef}
+                            text={singleUuid}
+                            defaultLabel="Copy"
+                            disabled={!canCopy}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 hover:border-emerald-400/50 hover:bg-emerald-400/10 font-mono text-xs font-semibold uppercase tracking-wider text-white/80 hover:text-emerald-200 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/20 disabled:hover:bg-transparent disabled:hover:text-white/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                            onCopyError={(message) =>
+                                scheduleSingleStatus(message)
+                            }
+                            aria-label="Copy UUID"
+                        />
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
-                    <CopyButton
-                        ref={copyButtonRef}
-                        text={singleUuid}
-                        defaultLabel="Copy"
-                        disabled={!hasGeneratedSingle}
-                        className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 w-24 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-white/30"
-                        onCopyError={(message) => scheduleSingleStatus(message)}
-                        aria-label="Copy UUID"
-                    />
-                </div>
             </div>
 
-            <p className="mt-6 text-xs text-white/55">
-                Shortcuts: press{' '}
-                <span className="rounded border border-white/25 bg-white/10 px-1.5 py-0.5 font-mono text-[0.7rem]">
-                    g
-                </span>{' '}
-                to regenerate,{' '}
-                <span className="rounded border border-white/25 bg-white/10 px-1.5 py-0.5 font-mono text-[0.7rem]">
-                    c
-                </span>{' '}
-                to copy.
-            </p>
             <output className="sr-only" aria-live="polite">
                 {singleStatus}
             </output>
             {singleStatus && (
-                <p className="mt-4 text-xs text-emerald-200" aria-hidden="true">
+                <div className="absolute -bottom-6 left-0 flex items-center gap-2 text-xs font-mono text-emerald-200">
+                    <span className="text-emerald-400">→</span>
                     {singleStatus}
-                </p>
+                </div>
             )}
         </section>
     );

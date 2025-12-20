@@ -3,25 +3,25 @@ import UuidApp from '../components/UuidApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 export const prerender = true;
 
-const title = 'Instant UUID Generator | genuuid.net';
+const title = 'UUID v4 Generator (Random) | genuuid.net';
 const description =
-    'Generate RFC 4122 compliant UUIDs (v1, v4, v7) instantly in your browser. No server roundtrips, up to 500 IDs at once, ready to copy.';
+    'Generate RFC 4122 UUID version 4 (random) locally in your browser. Copy a single UUID or bulk-generate up to 500 at once.';
 
 const site = Astro.site?.toString() ?? 'https://genuuid.net';
-const pageUrl = new URL('/', site).toString();
+const pageUrl = new URL(Astro.url.pathname, site).toString();
 
 const faqItems = [
     {
-        question: 'Does this UUID generator run locally in my browser?',
-        answer: 'Yes. UUIDs are generated in your browser (no server roundtrips required to create the IDs).',
+        question: 'What is UUID v4?',
+        answer: 'UUID v4 is a randomly generated UUID defined by RFC 4122. It’s the most common choice when you just need a unique identifier.',
     },
     {
-        question: 'Which UUID version should I use (v1, v4, v7)?',
-        answer: 'Use v4 for random identifiers in most apps. Use v7 when you want sortable IDs (time-ordered) while keeping good randomness. Use v1 when you specifically need the legacy timestamp-based format (it can leak time and node information).',
+        question: 'Should I use UUID v4 or UUID v7?',
+        answer: 'Use v4 when you want purely random IDs. Use v7 when you also want IDs that sort by time (helpful for databases, logs, and pagination).',
     },
     {
-        question: 'How many UUIDs can I generate at once?',
-        answer: 'You can generate single UUIDs or bulk-generate up to 500 UUIDs at a time and copy them in one click.',
+        question: 'Can I bulk-generate UUID v4 values here?',
+        answer: 'Yes — generate a single UUID or bulk-generate up to 500 at once and copy them in one click.',
     },
 ] as const;
 
@@ -33,7 +33,6 @@ const jsonLd = {
             '@id': `${site}#website`,
             url: site,
             name: 'genuuid.net',
-            description,
             inLanguage: 'en',
         },
         {
@@ -48,7 +47,7 @@ const jsonLd = {
         {
             '@type': 'WebApplication',
             '@id': `${pageUrl}#app`,
-            name: 'genuuid.net UUID Generator',
+            name: 'UUID v4 Generator',
             url: pageUrl,
             description,
             applicationCategory: 'DeveloperApplication',
@@ -79,3 +78,4 @@ const jsonLd = {
     <UuidApp client:load initialPathname={Astro.url.pathname} />
   </main>
 </BaseLayout>
+
