@@ -94,14 +94,14 @@ export function SeoHeader() {
         <header className="animate-float-up space-y-4">
             <div className="space-y-3">
                 {route !== 'home' && (
-                    <p className="font-mono text-xs uppercase tracking-widest text-white/40">
+                    <p className="font-mono text-xs uppercase tracking-widest text-slate-500 dark:text-white/40">
                         genuuid.net
                     </p>
                 )}
-                <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+                <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">
                     {routeTitle(route)}
                 </h1>
-                <p className="text-white/70 leading-relaxed max-w-prose">
+                <p className="text-slate-600 dark:text-white/70 leading-relaxed max-w-prose">
                     {routeIntro(route)}
                 </p>
             </div>
@@ -115,20 +115,20 @@ export function SeoFaq() {
 
     return (
         <section className="animate-float-up-delay-3 mt-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
-                <h2 className="text-lg font-semibold tracking-tight text-white">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6 dark:border-white/10 dark:bg-white/5">
+                <h2 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
                     FAQ
                 </h2>
                 <div className="mt-4 space-y-3">
                     {items.map((item) => (
                         <details
                             key={item.question}
-                            className="group rounded-xl border border-white/10 bg-black/20 px-4 py-3"
+                            className="group rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-black/20"
                         >
-                            <summary className="cursor-pointer list-none font-mono text-sm text-white/80">
+                            <summary className="cursor-pointer list-none font-mono text-sm text-slate-700 dark:text-white/80">
                                 {item.question}
                             </summary>
-                            <p className="mt-2 text-sm text-white/60 leading-relaxed">
+                            <p className="mt-2 text-sm text-slate-600 dark:text-white/60 leading-relaxed">
                                 {item.answer}
                             </p>
                         </details>

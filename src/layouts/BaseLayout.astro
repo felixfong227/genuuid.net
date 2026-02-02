@@ -12,6 +12,7 @@ const {
 
 import '../styles/global.css';
 import PostHog from '../components/posthog.astro';
+import Footer from '../components/Footer';
 
 const canonicalURL = new URL(
     Astro.url.pathname,
@@ -27,8 +28,21 @@ const jsonLdString =
 ---
 
 <!doctype html>
-<html lang="en" class="min-h-full bg-slate-950">
+<html lang="en" class="min-h-full bg-white dark:bg-slate-950">
   <head>
+    <script is:inline>
+      (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (theme === 'system') {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (prefersDark) {
+            document.documentElement.classList.add('dark');
+          }
+        }
+      })();
+    </script>
     <PostHog />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -64,9 +78,12 @@ const jsonLdString =
 
     <title>{title}</title>
   </head>
-  <body class="min-h-screen bg-slate-950 font-sans text-slate-100 antialiased">
-    <div class="min-h-screen">
-      <slot />
+  <body class="min-h-screen bg-white font-sans text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+    <div class="flex min-h-screen flex-col">
+      <div class="flex-1">
+        <slot />
+      </div>
+      <Footer client:load />
     </div>
   </body>
 </html>

@@ -23,6 +23,10 @@
 }
 
 html {
+    color-scheme: light;
+}
+
+html.dark {
     color-scheme: dark;
 }
 
@@ -33,6 +37,11 @@ body {
 
 ::selection {
     background: #34d399;
+    color: #ffffff;
+}
+
+html.dark ::selection {
+    background: #34d399;
     color: #020617;
 }
 
@@ -42,15 +51,28 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #cbd5e1;
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+html.dark ::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
     background: #475569;
 }
 
