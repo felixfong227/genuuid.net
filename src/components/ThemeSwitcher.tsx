@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 type Theme = 'light' | 'dark' | 'system';
 
 export default function ThemeSwitcher() {
-    const [theme, setTheme] = useState<Theme>('dark');
+    const [theme, setTheme] = useState<Theme>('light');
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const stored = localStorage.getItem('theme') as Theme | null;
-        const initialTheme = stored || 'dark';
+        const initialTheme = stored || 'light';
         setTheme(initialTheme);
     }, []);
 
