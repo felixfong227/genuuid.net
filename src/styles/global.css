@@ -6,6 +6,8 @@
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+@variant dark (.dark &);
+
 @font-face {
     font-family: "JetBrains Mono";
     src: url("https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@master/fonts/webfonts/JetBrainsMono-Regular.woff2")
