@@ -147,8 +147,8 @@ export default function SingleUuid() {
             aria-labelledby="single-heading"
             className="relative animate-float-up-delay-1 mb-8"
         >
-            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-[0_1.5rem_4rem_-1rem_rgba(16,185,129,0.25)]">
-                <div className="flex items-center justify-between gap-2 px-4 sm:px-5 py-3 border-b border-white/10 bg-black/20">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden shadow-lg dark:border-white/10 dark:bg-white/5 dark:shadow-[0_1.5rem_4rem_-1rem_rgba(16,185,129,0.25)]">
+                <div className="flex items-center justify-between gap-2 px-4 sm:px-5 py-3 border-b border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-black/20">
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         <div className="flex items-center gap-1.5 shrink-0">
                             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></div>
@@ -157,18 +157,18 @@ export default function SingleUuid() {
                         </div>
                         <h2
                             id="single-heading"
-                            className="font-mono text-xs sm:text-sm text-white/60 uppercase tracking-widest truncate"
+                            className="font-mono text-xs sm:text-sm text-slate-500 uppercase tracking-widest truncate dark:text-white/60"
                         >
                             <span className="hidden xs:inline">Single </span>
                             UUID
-                            <span className="text-emerald-400 ml-1 sm:ml-2">
+                            <span className="text-emerald-600 ml-1 sm:ml-2 dark:text-emerald-400">
                                 {version}
                             </span>
                         </h2>
                     </div>
                     <button
                         type="button"
-                        className="group shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-emerald-400 text-slate-950 font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-emerald-300 shadow-lg shadow-emerald-400/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                        className="group shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-emerald-600 text-white font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-emerald-500 shadow-lg shadow-emerald-600/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:bg-emerald-400 dark:text-slate-950 dark:hover:bg-emerald-300 dark:shadow-emerald-400/30 dark:focus-visible:ring-emerald-400 dark:focus-visible:ring-offset-slate-950"
                         onClick={handleRegenerate}
                     >
                         <svg
@@ -193,10 +193,10 @@ export default function SingleUuid() {
 
                 <div className="p-4 sm:p-6">
                     <div className="flex items-center gap-2 mb-3">
-                        <span className="text-emerald-400 font-mono text-sm">
+                        <span className="text-emerald-600 font-mono text-sm dark:text-emerald-400">
                             $
                         </span>
-                        <span className="text-white/40 font-mono text-xs uppercase tracking-widest">
+                        <span className="text-slate-500 font-mono text-xs uppercase tracking-widest dark:text-white/40">
                             current_uuid
                         </span>
                     </div>
@@ -225,7 +225,7 @@ export default function SingleUuid() {
                                         style={{
                                             width: `${partConfig.maxLength + 0.5}ch`,
                                         }}
-                                        className="p-0 text-center font-mono outline-none border-b-2 placeholder-white/20 align-baseline bg-transparent text-emerald-200 border-transparent focus:border-emerald-400 transition-colors"
+                                        className="p-0 text-center font-mono outline-none border-b-2 placeholder-slate-300 align-baseline bg-transparent text-emerald-700 border-transparent focus:border-emerald-600 transition-colors dark:placeholder-white/20 dark:text-emerald-200 dark:focus:border-emerald-400"
                                         placeholder={'-'.repeat(
                                             partConfig.maxLength,
                                         )}
@@ -235,7 +235,7 @@ export default function SingleUuid() {
                                         spellCheck={false}
                                     />
                                     {index < 4 && (
-                                        <span className="text-white/30 mx-0.5">
+                                        <span className="text-slate-400 mx-0.5 dark:text-white/30">
                                             -
                                         </span>
                                     )}
@@ -244,17 +244,17 @@ export default function SingleUuid() {
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:mt-6 pt-4 border-t border-white/10">
-                        <div className="hidden sm:flex items-center gap-3 text-white/40 text-xs font-mono">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:mt-6 pt-4 border-t border-slate-200 dark:border-white/10">
+                        <div className="hidden sm:flex items-center gap-3 text-slate-500 text-xs font-mono dark:text-white/40">
                             <span className="flex items-center gap-1.5">
-                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">
+                                <kbd className="px-1.5 py-0.5 rounded bg-slate-200 border border-slate-300 text-slate-700 text-[10px] font-semibold dark:bg-white/10 dark:border-white/20 dark:text-white/60">
                                     G
                                 </kbd>
                                 <span>regenerate</span>
                             </span>
-                            <span className="text-white/20">│</span>
+                            <span className="text-slate-300 dark:text-white/20">│</span>
                             <span className="flex items-center gap-1.5">
-                                <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white/60 text-[10px] font-semibold">
+                                <kbd className="px-1.5 py-0.5 rounded bg-slate-200 border border-slate-300 text-slate-700 text-[10px] font-semibold dark:bg-white/10 dark:border-white/20 dark:text-white/60">
                                     C
                                 </kbd>
                                 <span>copy</span>
@@ -265,7 +265,7 @@ export default function SingleUuid() {
                             text={singleUuid}
                             defaultLabel="Copy"
                             disabled={!canCopy}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 hover:border-emerald-400/50 hover:bg-emerald-400/10 font-mono text-xs font-semibold uppercase tracking-wider text-white/80 hover:text-emerald-200 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-white/20 disabled:hover:bg-transparent disabled:hover:text-white/80 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 hover:border-emerald-600/50 hover:bg-emerald-600/10 font-mono text-xs font-semibold uppercase tracking-wider text-slate-700 hover:text-emerald-700 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-slate-300 disabled:hover:bg-transparent disabled:hover:text-slate-700 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-white/20 dark:hover:border-emerald-400/50 dark:hover:bg-emerald-400/10 dark:text-white/80 dark:hover:text-emerald-200 dark:disabled:hover:border-white/20 dark:disabled:hover:bg-transparent dark:disabled:hover:text-white/80 dark:focus-visible:ring-emerald-400 dark:focus-visible:ring-offset-slate-950"
                             onCopyError={(message) =>
                                 scheduleSingleStatus(message)
                             }
@@ -279,8 +279,8 @@ export default function SingleUuid() {
                 {singleStatus}
             </output>
             {singleStatus && (
-                <div className="absolute -bottom-6 left-0 flex items-center gap-2 text-xs font-mono text-emerald-200">
-                    <span className="text-emerald-400">→</span>
+                <div className="absolute -bottom-6 left-0 flex items-center gap-2 text-xs font-mono text-emerald-700 dark:text-emerald-200">
+                    <span className="text-emerald-600 dark:text-emerald-400">→</span>
                     {singleStatus}
                 </div>
             )}

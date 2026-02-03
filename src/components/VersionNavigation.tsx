@@ -13,7 +13,7 @@ export default function VersionNavigation() {
 
     return (
         <nav aria-label="UUID versions" className="animate-float-up">
-            <div className="inline-flex items-stretch rounded-xl border border-white/10 bg-white/5 p-1">
+            <div className="inline-flex items-stretch rounded-xl border border-slate-200 bg-slate-100/50 p-1 dark:border-white/10 dark:bg-white/5">
                 {versions.map((v) => {
                     const isActive = version === v.id;
                     return (
@@ -36,10 +36,10 @@ export default function VersionNavigation() {
                             }}
                             className={clsx(
                                 'relative flex flex-col items-center justify-center px-5 py-2.5 rounded-lg font-mono text-sm transition-all duration-200 cursor-pointer',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950',
                                 isActive
-                                    ? 'bg-white text-slate-950 shadow-lg shadow-white/20'
-                                    : 'text-white/40 hover:text-white/70 hover:bg-white/5',
+                                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20 dark:bg-white dark:text-slate-950 dark:shadow-white/20'
+                                    : 'text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 dark:text-white/40 dark:hover:text-white/70 dark:hover:bg-white/5',
                             )}
                             aria-current={isActive ? 'page' : undefined}
                         >
@@ -50,8 +50,8 @@ export default function VersionNavigation() {
                                 className={clsx(
                                     'text-[10px] uppercase tracking-widest mt-0.5',
                                     isActive
-                                        ? 'text-slate-600'
-                                        : 'text-white/30',
+                                        ? 'text-slate-200 dark:text-slate-600'
+                                        : 'text-slate-300 dark:text-white/30',
                                 )}
                             >
                                 {v.desc}
